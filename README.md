@@ -1,2 +1,2 @@
 # Undergrad-courses
-Code linked to selected undergraduate courses
+Code from selected undergraduate courses
