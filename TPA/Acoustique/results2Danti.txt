@@ -1,0 +1,22 @@
+simorder 2:
+Room: 10X10
+Hspike = 0
+Lspike = 0.5
+Niveau sonore du signal d'entrée =  84.28685576430313  dB
+Niveau sonore du signal de sortie =  74.87240994565278  dB
+Fraction de l'énergie transmise =  0.3382810804771434
+
+Hspike = 1
+Niveau sonore du signal d'entrée =  84.28685576430313  dB
+Niveau sonore du signal de sortie =  70.31594120249488  dB
+Fraction de l'énergie transmise =  0.20019548190242045
+ 
+Hspike = 2
+Niveau sonore du signal d'entrée =  84.28685576430313  dB
+Niveau sonore du signal de sortie =  69.84572424515869  dB
+Fraction de l'énergie transmise =  0.1896458851611415
+
+Hspike = 4
+Niveau sonore du signal d'entrée =  84.28685576430313  dB
+Niveau sonore du signal de sortie =  69.56348067023295  dB
+Fraction de l'énergie transmise =  0.18358248544823208
