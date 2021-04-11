@@ -72,7 +72,7 @@ class GridEnvironment(object):
             self,
             position: Tuple[int, int],
             state: int,
-            add_as_new_walker: bool
+            add_new_walker: bool
     ):
         """
         This function updates the state matrix at the given position with the given state.
@@ -96,12 +96,12 @@ class GridEnvironment(object):
         else:
             raise ValueError("The state value you entered is not allowed. The allowed state values are 0 and 1.")
 
-        if state == 0 and add_as_new_walker:
+        if state == 0 and add_new_walker:
             raise PermissionError("A new walker must be paired with a state value of 1.")
 
         self._state[position] = state
 
-        if add_as_new_walker:
+        if add_new_walker:
             self._walkers_count += 1
 
     def get_adjacent_positions(
@@ -119,7 +119,17 @@ class GridEnvironment(object):
         filter_positions_outside_bounds (bool): Whether or not to remove adjacent positions that are outside the grid
                                                 bounds from the list of adjacent positions. Default = True.
         filter_diagonal (bool): Whether or not to remove diagonal adjacent positions from the list of adjacent
-                                positions. Default = True.
+                                positions.
+                                If True:
+                                         |A|
+                                        A|X|A
+                                         |A|
+                                If False:
+                                        A|A|A
+                                        A|X|A
+                                        A|A|A
+
+                                Default = True.
 
         Returns
         -------
@@ -203,8 +213,8 @@ if __name__ == "__main__":
     # ----------------------------------------------------------------------------------------------------------- #
     grid = GridEnvironment()
     grid_state = grid.state
-    grid.set_state(position=initial_walker_position, state=1, add_as_new_walker=True)
+    grid.set_state(position=initial_walker_position, state=1, add_new_walker=True)
     print(grid.walkers_count)
     print(grid.get_adjacent_positions((0, 0)))
-    grid.set_state(position=(99, 99), state=1, add_as_new_walker=False)
+    grid.set_state(position=(99, 99), state=1, add_new_walker=False)
     print(grid.get_random_next_position((100, 100), avoid_other_walkers=True))
