@@ -2,11 +2,11 @@ import logging
 import matplotlib.pyplot as plt
 
 from src.tools import logs_file_setup
-from grid_environment import GridEnvironment
+from walkers_grid import WalkersGrid
 from animation import Animation
 
 
-class BrownianMotion(GridEnvironment):
+class BrownianMotion(WalkersGrid):
     def __init__(self, **kwargs):
         super().__init__(kwargs.get("grid_size", 101))
 
@@ -18,7 +18,7 @@ class BrownianMotion(GridEnvironment):
         current_position = position
 
         for jump in range(walk_length):
-            next_position = self.get_random_next_position(
+            next_position = self.get_random_adjacent_position(
                 position=current_position,
                 avoid_other_walkers=False,
                 filter_positions_outside_bounds=True,

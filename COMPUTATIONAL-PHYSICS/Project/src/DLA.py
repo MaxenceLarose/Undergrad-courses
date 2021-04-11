@@ -1,9 +1,9 @@
 # Stickiness factor
 
-from grid_environment import GridEnvironment
+from walkers_grid import WalkersGrid
 
 
-class DLA(GridEnvironment):
+class DLA(WalkersGrid):
     def __init__(self, size):
         super().__init__(size)
 

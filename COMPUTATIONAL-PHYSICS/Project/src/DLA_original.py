@@ -1,9 +1,9 @@
 from animation import Animation
 
-from grid_environment import GridEnvironment
+from walkers_grid import WalkersGrid
 
 
-class DLAOriginal(GridEnvironment):
+class DLAOriginal(WalkersGrid):
     def __init__(self, size):
         super().__init__(size)
 

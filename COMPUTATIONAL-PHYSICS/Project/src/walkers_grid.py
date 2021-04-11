@@ -6,7 +6,7 @@ from itertools import starmap, product
 from src.tools import logs_file_setup
 
 
-class GridEnvironment(object):
+class WalkersGrid(object):
     def __init__(
             self,
             grid_size: int = 101
@@ -152,7 +152,7 @@ class GridEnvironment(object):
 
         return list(adjacent_positions)[1:]
 
-    def get_random_next_position(
+    def get_random_adjacent_position(
             self,
             position: Tuple[int, int],
             avoid_other_walkers: bool = True,
@@ -211,10 +211,10 @@ if __name__ == "__main__":
     # ----------------------------------------------------------------------------------------------------------- #
     #                                  Grid Environment Setup                                                     #
     # ----------------------------------------------------------------------------------------------------------- #
-    grid = GridEnvironment()
+    grid = WalkersGrid()
     grid_state = grid.state
     grid.set_state(position=initial_walker_position, state=1, add_new_walker=True)
     print(grid.walkers_count)
     print(grid.get_adjacent_positions((0, 0)))
     grid.set_state(position=(99, 99), state=1, add_new_walker=False)
-    print(grid.get_random_next_position((100, 100), avoid_other_walkers=True))
+    print(grid.get_random_adjacent_position((100, 100), avoid_other_walkers=True))
