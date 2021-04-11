@@ -146,7 +146,7 @@ class GridEnvironment(object):
 
         if filter_positions_outside_bounds:
             adjacent_positions = filter(
-                lambda location: -1 < location[0] < self.grid_size and -1 < location[1] < self.grid_size,
+                lambda location: self.validate_position(location),
                 adjacent_positions
             )
 
