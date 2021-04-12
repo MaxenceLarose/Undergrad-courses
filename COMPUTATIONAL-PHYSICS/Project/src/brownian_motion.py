@@ -1,4 +1,5 @@
 import logging
+from typing import Tuple
 import matplotlib.pyplot as plt
 
 from src.tools import logs_file_setup
@@ -8,16 +9,45 @@ from animation import Animation
 
 class BrownianMotion(WalkersGrid):
     def __init__(self, **kwargs):
+        """
+        Constructor of the class BrownianMotion.
+
+        Parameters
+        ----------
+        kwargs: {
+            grid_size (int): Square grid size. Default = 101.
+        }
+        """
         super().__init__(kwargs.get("grid_size", 101))
 
-    def random_walk(self, position, walk_length: int):
-        self.set_state(position=position, state=1, add_new_walker=True)
+    def random_walk(
+            self,
+            initial_position: Tuple[int, int],
+            number_of_steps: int
+    ):
+        """
+        This function performs a random walk starting from a given position.
+
+        Parameters
+        ----------
+        initial_position (Tuple[int, int]): The starting position (x, y).
+        number_of_steps (int): The number of steps on the grid the walker must do.
+
+        Returns
+        -------
+        None
+        """
+        self.set_state(position=initial_position, state=1, add_new_walker=True)
+
+        # ---------------------------------------------------------------------
+        # Will be replaced by the corresponding function of the animation class
         plt.imshow(self.state, cmap='gray')
         plt.show()
+        # ---------------------------------------------------------------------
 
-        current_position = position
+        current_position = initial_position
 
-        for jump in range(walk_length):
+        for step in range(number_of_steps):
             next_position = self.get_random_adjacent_position(
                 position=current_position,
                 avoid_other_walkers=False,
@@ -26,15 +56,18 @@ class BrownianMotion(WalkersGrid):
                 )
 
             self.set_state(
-                next_position,
+                position=next_position,
                 state=1,
                 add_new_walker=False
             )
 
             current_position = next_position
 
+        # ---------------------------------------------------------------------
+        # Will be replaced by the corresponding function of the animation class
         plt.imshow(self.state, cmap='gray')
         plt.show()
+        # ---------------------------------------------------------------------
 
 
 if __name__ == "__main__":
@@ -50,11 +83,12 @@ if __name__ == "__main__":
     center = int((grid_size - 1)/2)
     initial_walker_position = (center, center)
 
-    logging.info(f"Initial position is {initial_walker_position}")
+    nb_steps = 1000
 
+    logging.info(f"Initial position is {initial_walker_position}.")
+    logging.info(f"The total number of steps is {nb_steps}.")
     # ----------------------------------------------------------------------------------------------------------- #
     #                                      Brownian Motion                                                        #
     # ----------------------------------------------------------------------------------------------------------- #
     brownian = BrownianMotion()
-    brownian.random_walk(position=initial_walker_position, walk_length=1000)
-
+    brownian.random_walk(initial_position=initial_walker_position, number_of_steps=nb_steps)

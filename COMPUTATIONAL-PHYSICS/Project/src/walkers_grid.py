@@ -12,12 +12,11 @@ class WalkersGrid(object):
             grid_size: int = 101
     ):
         """
-        Constructor of the class GridEnvironment.
+        Constructor of the class WalkersGrid.
 
         Parameters
         ----------
         grid_size (int): Square grid size. Default = 101.
-
         """
         self.grid_size = grid_size
         self._state: np.ndarray = np.zeros((self.grid_size, self.grid_size), dtype=int)
