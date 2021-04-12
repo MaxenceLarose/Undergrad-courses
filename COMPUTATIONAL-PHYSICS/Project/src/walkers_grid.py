@@ -40,8 +40,13 @@ class WalkersGrid(object):
 
         Returns
         -------
-        self._state (np.ndarray): Current state of the grid matrix. The state of a specific position is 1 if a walker is
-                                  currently at this position and 0 if there is not any walker at this position.
+        self._state (np.ndarray): Current state of the grid matrix. The state of a specific position is generally 1 if a
+                                  walker is currently at this position and 0 if there is not any walker at this
+                                  position. However, the user can set the state of a specific position to a value of 0
+                                  or 1 without adding a new walker to the grid, so this interpretation may differ
+                                  depending on how it is used. For example, this can be used to follow the path of a
+                                  single walker, note the final position of several walkers after their random walks,
+                                  etc...
         """
         return self._state
 
@@ -80,7 +85,7 @@ class WalkersGrid(object):
         ----------
         position (Tuple[int, int]): The position (x, y) to update.
         state (int): State to use for the update. The allowed values are 0 or 1.
-        add_as_new_walker (bool): Whether or not the update involves to add a new walker to the grid environment.
+        add_as_new_walker (bool): Whether or not the update involves adding a new walker to the grid environment.
 
         Returns
         -------
@@ -195,6 +200,74 @@ class WalkersGrid(object):
 
         return random_adjacent_position
 
+    def get_state_surface_area(self) -> int:
+        """
+        This function returns the surface area of the current state matrix.
+
+        Returns
+        -------
+        area (int): Surface area of the current state matrix.
+        """
+        area = np.count_nonzero(self._state)
+
+        return area
+
+    def get_ratio_of_occupied_area(self) -> float:
+        """
+        This function returns the ratio between the surface area of the current state matrix and the total surface area
+        of the grid.
+
+        Returns
+        -------
+        ratio (float): Ratio between the surface area of the current state matrix and the total surface area of the
+                       grid.
+        """
+        state_area = self.get_state_surface_area()
+        grid_area = self._state.size
+
+        ratio = state_area/grid_area
+
+        return ratio
+
+    def get_neighbors_count(self) -> float:
+        """
+        This function returns the total number of neighbors. For each position with state 1, it counts the number of
+        adjacent positions with state 1 and returns the sum of all these numbers.
+
+        Returns
+        -------
+        neighbors_count (float): Total number of neighbors.
+        """
+        neighbors_count: int = 0
+
+        for i in range(self.grid_size):
+            for j in range(self.grid_size):
+                if self.state[i, j] == 1:
+                    neighbors = self.get_adjacent_positions(position=(i, j))
+                    neighbors = list(
+                        filter(
+                            lambda position: self.state[position] == 1,
+                            neighbors
+                        )
+                    )
+
+                    neighbors_count += len(neighbors)
+
+        return neighbors_count
+
+    def get_average_neighbors_count(self) -> float:
+        """
+        This function returns the average number of neighbors.
+
+        Returns
+        -------
+        average_neighbors_count (float): Average number of neighbors.
+        """
+        neighbors_count = self.get_neighbors_count()
+        average_neighbors_count = neighbors_count/self._walkers_count
+
+        return average_neighbors_count
+
 
 if __name__ == "__main__":
     # ----------------------------------------------------------------------------------------------------------- #
@@ -217,3 +290,8 @@ if __name__ == "__main__":
     print(grid.get_adjacent_positions((0, 0)))
     grid.set_state(position=(99, 99), state=1, add_new_walker=False)
     print(grid.get_random_adjacent_position((100, 100), avoid_other_walkers=True))
+    print(grid.get_state_surface_area())
+    print(grid.get_ratio_of_occupied_area())
+    grid.set_state(position=(99, 98), state=1, add_new_walker=True)
+    print(grid.get_neighbors_count())
+    print(grid.get_average_neighbors_count())
