@@ -158,35 +158,22 @@ class WalkersGrid(object):
 
     def get_random_adjacent_position(
             self,
-            position: Tuple[int, int],
-            avoid_other_walkers: bool = True,
-            **kwargs
+            adjacent_positions: List[tuple],
+            avoid_other_walkers: bool = False,
     ) -> Tuple[int, int]:
         """
-        This function returns a random position adjacent to the given position.
+        This function returns a random adjacent position given a list of adjacent positions.
 
         Parameters
         __________
-        position (Tuple[int, int]): The position (x, y) to get the adjacent positions from.
+        adjacent_positions (List[tuple, ..., tuple]): List of all the adjacent positions.
         avoid_other_walkers (bool): Whether or not to avoid other walkers. If this is true, the walker's next position
-                                    cannot be a position where a walker is already present. Default = True.
-        kwargs: {
-            filter_positions_outside_bounds (bool): Whether or not to remove adjacent positions that are outside the
-                                                    grid bounds from the list of adjacent positions. Default = True.
-            filter_diagonal (bool): Whether or not to remove diagonal adjacent positions from the list of adjacent
-                                    positions. Default = True.
-        }
+                                    cannot be a position where a walker is already present. Default = False.
 
         Returns
         _______
         random_adjacent_position (Tuple[int, int]): Random adjacent position (x, y).
         """
-        adjacent_positions = self.get_adjacent_positions(
-            position=position,
-            filter_positions_outside_bounds=kwargs.get("filter_positions_outside_bounds", True),
-            filter_diagonal=kwargs.get("filter_diagonal", True)
-        )
-
         if avoid_other_walkers:
             adjacent_positions = list(
                 filter(
@@ -289,7 +276,8 @@ if __name__ == "__main__":
     print(grid.walkers_count)
     print(grid.get_adjacent_positions((0, 0)))
     grid.set_state(position=(99, 99), state=1, add_new_walker=False)
-    print(grid.get_random_adjacent_position((100, 100), avoid_other_walkers=True))
+    print(grid.get_random_adjacent_position(adjacent_positions=grid.get_adjacent_positions((100, 100)),
+                                            avoid_other_walkers=True))
     print(grid.get_state_surface_area())
     print(grid.get_ratio_of_occupied_area())
     grid.set_state(position=(99, 98), state=1, add_new_walker=True)
