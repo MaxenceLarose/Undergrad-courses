@@ -1,10 +1,15 @@
 import logging
 from typing import Tuple
 import matplotlib.pyplot as plt
+import numpy as np
 
 from src.tools import logs_file_setup, set_seed
 from walkers_grid import WalkersGrid
 from animation import Animation
+
+
+import sys
+np.set_printoptions(threshold=sys.maxsize)
 
 
 class BrownianMotion(WalkersGrid):
@@ -41,13 +46,23 @@ class BrownianMotion(WalkersGrid):
 
         # ---------------------------------------------------------------------
         # Will be replaced by the corresponding function of the animation class
-        plt.imshow(self.state, cmap='gray')
+        plt.imshow(self.state, cmap='CMRmap')
         plt.show()
         # ---------------------------------------------------------------------
 
         current_position = initial_position
+        state_frame = []
+        position_frame =[]
 
         for step in range(number_of_steps):
+
+            frame = self.state.copy()
+            state_frame.append(frame)
+
+            position_grid = WalkersGrid(grid_size=self.grid_size)
+            position_grid.set_state(position=current_position, state=1, add_new_walker=False)
+            position_frame.append(position_grid.state)
+
             adjacent_positions = self.get_adjacent_positions(
                 position=current_position,
                 filter_positions_outside_bounds=True,
@@ -65,12 +80,21 @@ class BrownianMotion(WalkersGrid):
                 add_new_walker=False
             )
 
+
             current_position = next_position
+
+        frame = self.state.copy()
+        state_frame.append(frame)
+
+        position_grid = WalkersGrid(grid_size=self.grid_size)
+        position_grid.set_state(position=current_position, state=1, add_new_walker=False)
+        position_frame.append(position_grid.state)
+
 
         # ---------------------------------------------------------------------
         # Will be replaced by the corresponding function of the animation class
-        plt.imshow(self.state, cmap='gray')
-        plt.show()
+        animate = Animation()
+        animate.brownian_motion_animation(state_frame, position_frame, 30)
         # ---------------------------------------------------------------------
 
 

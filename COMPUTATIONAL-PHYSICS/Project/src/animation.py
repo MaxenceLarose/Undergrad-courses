@@ -1,4 +1,68 @@
+import matplotlib.pyplot as plt
+import matplotlib.animation as anim
+import numpy as np
+from typing import List
 
 class Animation():
     def __init__(self):
         pass
+
+
+
+    def brownian_motion_animation(
+            self,
+            state_frames : List[np.ndarray],
+            position_frames : List[np.ndarray],
+            fps : int
+    ):
+
+        """
+        This function animates the state_frames from the brownian_motion.
+
+        Parameters
+        ----------
+        state_frames (list[np.ndarray]): List of the saved state_frames from the brownian_motion.
+        position_frames_frames (list[np.ndarray]): List of the saved position_frames from the brownian_motion.
+        fps (int): frames per second for rendering the animation.
+
+        Returns
+        -------
+        None
+        """
+
+        nframes = len(state_frames)
+
+        fig = plt.figure()
+
+
+
+        frame = []
+        position_prec = 0
+        for i in range(len(state_frames)):
+            position_sum = position_frames[i] + position_prec
+            frame.append(state_frames[i] + position_sum)
+
+            position_prec = position_sum
+
+        maximum = np.amax(frame[-1])
+        print(maximum)
+
+        im_state = plt.imshow(frame[0] + (maximum+1)*position_frames[0], cmap='CMRmap', vmin = 0, vmax = maximum+1)
+
+        def init():
+            im_state.set_data(frame[0]+(maximum+1)*position_frames[0])
+            return [im_state]
+
+        def animate_func(i):
+            im_state.set_data(frame[i]+(maximum+1)*position_frames[i])
+            return [im_state]
+
+        animated = anim.FuncAnimation(fig,animate_func, init_func = init, frames = nframes, interval = 1000/fps)
+
+        plt.show()
+
+        print('animation done')
+
+
+
+
