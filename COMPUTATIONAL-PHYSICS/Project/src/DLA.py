@@ -33,7 +33,7 @@ class DLA(WalkersGrid):
         Parameters
         ----------
         initial_position (Tuple[int, int]): The starting position (x, y).
-        show_cluster_every_n_iterations (int): The cluster formed by the walkers will be shown every n iterations.
+        show_cluster_every_n_iterations (int): Display cluster formed by the walkers every n iterations.
         show_every_random_walk (bool): Display or not the figure of the random walk performed by each walkers added to
                                        the structure.
 
@@ -108,8 +108,8 @@ class DLA(WalkersGrid):
             adjacent_positions: List[tuple],
     ) -> bool:
         """
-        Check if the random walk must be terminated. The random walk must be terminated if any adjacent positions is
-        occupied by a walker (state = 1) or if any adjacent positions is outside the grid (walker reaches one of the
+        Check if the random walk must be terminated. The random walk must be terminated if an adjacent position is
+        occupied by a walker (state = 1) or if an adjacent position is outside the grid (walker reaches one of the
         sides of the grid).
 
         Parameters
