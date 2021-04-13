@@ -2,7 +2,7 @@ import logging
 from typing import Tuple
 import matplotlib.pyplot as plt
 
-from src.tools import logs_file_setup
+from src.tools import logs_file_setup, set_seed
 from walkers_grid import WalkersGrid
 from animation import Animation
 
@@ -48,11 +48,15 @@ class BrownianMotion(WalkersGrid):
         current_position = initial_position
 
         for step in range(number_of_steps):
-            next_position = self.get_random_adjacent_position(
+            adjacent_positions = self.get_adjacent_positions(
                 position=current_position,
-                avoid_other_walkers=False,
                 filter_positions_outside_bounds=True,
                 filter_diagonal=True
+            )
+
+            next_position = self.get_random_adjacent_position(
+                adjacent_positions=adjacent_positions,
+                avoid_other_walkers=False,
                 )
 
             self.set_state(

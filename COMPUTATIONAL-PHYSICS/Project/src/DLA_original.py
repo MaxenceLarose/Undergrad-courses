@@ -1,5 +1,6 @@
-from animation import Animation
+# Stickiness factor
 
+from animation import Animation
 from walkers_grid import WalkersGrid
 
 
