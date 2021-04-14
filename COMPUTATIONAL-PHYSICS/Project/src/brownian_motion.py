@@ -6,6 +6,8 @@ import numpy as np
 from src.tools import logs_file_setup, set_seed
 from walkers_grid import WalkersGrid
 from animation import Animation
+from theoretical_tools import plot_mean_displacement
+
 
 
 import sys
@@ -42,7 +44,7 @@ class BrownianMotion(WalkersGrid):
 
         Returns
         -------
-        current_posiiton (Tuple[int, int]): The final position (x, y).
+        current_position (Tuple[int, int]): The final position (x, y).
         """
         self.set_state(position=initial_position, state=1, add_new_walker=True)
 
@@ -118,6 +120,9 @@ class BrownianMotion(WalkersGrid):
             )
             distance.append(np.linalg.norm(np.asarray(last_position) - np.asarray(initial_position)))
         print(np.mean(distance))
+        print(np.sqrt(np.mean(np.asarray(distance)**2)))
+
+        plot_mean_displacement(distance=np.asarray(distance))
 
 
 
@@ -142,6 +147,6 @@ if __name__ == "__main__":
     # ----------------------------------------------------------------------------------------------------------- #
     #                                      Brownian Motion                                                        #
     # ----------------------------------------------------------------------------------------------------------- #
-    brownian = BrownianMotion()
+    brownian = BrownianMotion(grid_size=grid_size)
     brownian.random_walk(initial_position=initial_walker_position, number_of_steps=nb_steps, show_animation=True)
-    brownian.show_final_distances(initial_position=initial_walker_position, number_of_steps=nb_steps, number_of_walkers=100000)
+    brownian.show_final_distances(initial_position=initial_walker_position, number_of_steps=nb_steps, number_of_walkers=1000)
