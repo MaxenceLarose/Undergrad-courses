@@ -1,5 +1,5 @@
 import logging
-from typing import Tuple
+from typing import Tuple, List
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -28,8 +28,9 @@ class BrownianMotion(WalkersGrid):
     def random_walk(
             self,
             initial_position: Tuple[int, int],
-            number_of_steps: int
-    ):
+            number_of_steps: int,
+            show_animation: bool
+    ) -> Tuple[int, int]:
         """
         This function performs a random walk starting from a given position.
 
@@ -37,17 +38,18 @@ class BrownianMotion(WalkersGrid):
         ----------
         initial_position (Tuple[int, int]): The starting position (x, y).
         number_of_steps (int): The number of steps on the grid the walker must do.
+        show_animation (bool): Display animation
 
         Returns
         -------
-        None
+        current_posiiton (Tuple[int, int]): The final position (x, y).
         """
         self.set_state(position=initial_position, state=1, add_new_walker=True)
 
         # ---------------------------------------------------------------------
         # Will be replaced by the corresponding function of the animation class
-        plt.imshow(self.state, cmap='CMRmap')
-        plt.show()
+        # plt.imshow(self.state, cmap='CMRmap')
+        # plt.show()
         # ---------------------------------------------------------------------
 
         current_position = initial_position
@@ -91,11 +93,33 @@ class BrownianMotion(WalkersGrid):
         position_frame.append(position_grid.state)
 
 
+
         # ---------------------------------------------------------------------
         # Will be replaced by the corresponding function of the animation class
-        animate = Animation()
-        animate.brownian_motion_animation(state_frame, position_frame, 30)
+        if show_animation:
+            animate = Animation()
+            animate.brownian_motion_animation(state_frame, position_frame, 30)
         # ---------------------------------------------------------------------
+
+        return current_position
+
+    def show_final_distances(
+            self,
+            initial_position: Tuple[int, int],
+            number_of_steps: int,
+            number_of_walkers: int
+    ):
+        distance = []
+        for walker in range(number_of_walkers):
+            last_position = self.random_walk(
+                initial_position=initial_position,
+                number_of_steps=number_of_steps,
+                show_animation=False
+            )
+            distance.append(np.linalg.norm(np.asarray(last_position) - np.asarray(initial_position)))
+        print(np.mean(distance))
+
+
 
 
 if __name__ == "__main__":
@@ -111,7 +135,7 @@ if __name__ == "__main__":
     center = int((grid_size - 1)/2)
     initial_walker_position = (center, center)
 
-    nb_steps = 1000
+    nb_steps = 100
 
     logging.info(f"Initial position is {initial_walker_position}.")
     logging.info(f"The total number of steps is {nb_steps}.")
@@ -119,4 +143,5 @@ if __name__ == "__main__":
     #                                      Brownian Motion                                                        #
     # ----------------------------------------------------------------------------------------------------------- #
     brownian = BrownianMotion()
-    brownian.random_walk(initial_position=initial_walker_position, number_of_steps=nb_steps)
+    brownian.random_walk(initial_position=initial_walker_position, number_of_steps=nb_steps, show_animation=True)
+    brownian.show_final_distances(initial_position=initial_walker_position, number_of_steps=nb_steps, number_of_walkers=100000)
