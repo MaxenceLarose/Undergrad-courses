@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 
 from walkers_grid import WalkersGrid
 from src.tools import logs_file_setup, set_seed
+from animation import Animation
 
 
 class DLA(WalkersGrid):
@@ -23,8 +24,8 @@ class DLA(WalkersGrid):
     def dla_cluster(
             self,
             initial_position: Tuple[int, int],
-            show_cluster_every_n_iterations: int,
-            show_every_random_walk: bool = False
+            log_cluster_every_n_iterations: int,
+            log_every_random_walk: bool = False
     ):
         """
         This function uses the DLA process to create fractal structures called Brownian trees as walkers aggregate into
@@ -33,20 +34,24 @@ class DLA(WalkersGrid):
         Parameters
         ----------
         initial_position (Tuple[int, int]): The starting position (x, y).
-        show_cluster_every_n_iterations (int): Display cluster formed by the walkers every n iterations.
-        show_every_random_walk (bool): Display or not the figure of the random walk performed by each walkers added to
+        log_cluster_every_n_iterations (int): Display cluster formed by the walkers every n iterations.
+        log_every_random_walk (bool): Display or not the figure of the random walk performed by each walkers added to
                                        the structure.
 
         Returns
         -------
         Fig and axes.
         """
+        state_frame = []
         complete_cluster = False
         while not complete_cluster:
             current_position = initial_position
             complete_random_walk = False
 
-            if show_every_random_walk:
+            frame = self.state.copy()
+            state_frame.append(frame)
+
+            if log_every_random_walk:
                 walker_grid = WalkersGrid(grid_size=self.grid_size)
                 walker_grid.set_state(position=current_position, state=1, add_new_walker=True)
 
@@ -66,15 +71,11 @@ class DLA(WalkersGrid):
                 else:
                     current_position = next_position
 
-                if show_every_random_walk:
+                if log_every_random_walk:
                     walker_grid.set_state(position=current_position, state=1, add_new_walker=False)
 
-            if show_every_random_walk:
-                # ---------------------------------------------------------------------
-                # Will be replaced by the corresponding function of the animation class
-                plt.imshow(walker_grid.state, cmap='gray')
-                plt.show()
-                # ---------------------------------------------------------------------
+            if log_every_random_walk:
+                logging.info(f"Current number of walkers: {self.walkers_count}")
 
             self.set_state(
                 position=current_position,
@@ -87,20 +88,18 @@ class DLA(WalkersGrid):
                 final_position=current_position
             )
 
-            if (self.walkers_count % show_cluster_every_n_iterations) == 0:
+            if (self.walkers_count % log_cluster_every_n_iterations) == 0:
                 logging.info(f"Current number of walkers: {self.walkers_count}")
 
-                # ---------------------------------------------------------------------
-                # Will be replaced by the corresponding function of the animation class
-                plt.imshow(self.state, cmap='gray')
-                plt.show()
-                # ---------------------------------------------------------------------
-
         logging.info(f"Total number of walkers: {self.walkers_count}")
+
+        frame = self.state.copy()
+        state_frame.append(frame)
+
         # ---------------------------------------------------------------------
         # Will be replaced by the corresponding function of the animation class
-        plt.imshow(self.state, cmap='gray')
-        plt.show()
+        animate = Animation()
+        animate.DLA_animation(state_frame, 30)
         # ---------------------------------------------------------------------
 
     def check_walk_terminate_conditions(
@@ -168,7 +167,7 @@ if __name__ == "__main__":
     center = int((grid_size - 1)/2)
     initial_walker_position = (center, center)
 
-    SHOW_CLUSTER_EVERY_N_ITERATIONS = 300
+    LOG_CLUSTER_EVERY_N_ITERATIONS = 300
 
     logging.info(f"Initial position is {initial_walker_position}.")
     # ----------------------------------------------------------------------------------------------------------- #
@@ -178,6 +177,6 @@ if __name__ == "__main__":
 
     dla.dla_cluster(
         initial_position=initial_walker_position,
-        show_cluster_every_n_iterations=SHOW_CLUSTER_EVERY_N_ITERATIONS,
-        show_every_random_walk=False
+        log_cluster_every_n_iterations=LOG_CLUSTER_EVERY_N_ITERATIONS,
+        log_every_random_walk=False
     )
