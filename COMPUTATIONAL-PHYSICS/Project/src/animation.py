@@ -69,11 +69,11 @@ class Animation():
     ):
 
         """
-        This function animates the state_frames from the DLA.
+        This function animates the state_frames from the DLA and the DLA original.
 
         Parameters
         ----------
-        state_frames (list[np.ndarray]): List of the saved state_frames from the brownian_motion.
+        state_frames (list[np.ndarray]): List of the saved state_frames from the DLA.
         fps (int): frames per second for rendering the animation.
 
         Returns
@@ -117,9 +117,6 @@ class Animation():
         animated = anim.FuncAnimation(fig,animate_func, init_func = init, frames = nframes, interval = 1000/fps)
 
         plt.show()
-
-    def DLA_original_animation(self):
-        pass
 
 
 
