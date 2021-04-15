@@ -149,7 +149,7 @@ class DLAOriginal(WalkersGrid):
 
             # Animation function.
             animate = Animation()
-            animate.DLA_animation(state_frame, 30)
+            animate.DLA_animation(state_frame, 30, 'original')
 
         if show_last_frame:
             frame_sum += frame
@@ -159,9 +159,11 @@ class DLAOriginal(WalkersGrid):
                 frame_sum[x, y] = -1 * (frame_sum[x, y] - maximum)
 
             # Plot last frame.
-            plt.imshow(frame_sum, cmap='CMRmap', vmin = 0, vmax = maximum)
+            plt.imshow(frame_sum, cmap='winter', vmin = 0, vmax = maximum)
+            plt.savefig(f'DLAoriginal_{self.walkers_count}walkers_{self.grid_size}.pdf', dpi = 300, bbox_inches = 'tight')
+
             plt.show()
-        print('done')
+
 
     def check_walk_terminate_conditions(
             self,
@@ -290,13 +292,11 @@ if __name__ == "__main__":
     # ----------------------------------------------------------------------------------------------------------- #
     #                                            DLA                                                              #
     # ----------------------------------------------------------------------------------------------------------- #
-
-    while True:
-        dla = DLAOriginal(grid_size=grid_size)
-        dla.dlaoriginal_cluster(
-            initial_position=initial_walker_position,
-            log_cluster_every_n_iterations=LOG_CLUSTER_EVERY_N_ITERATIONS,
-            log_every_random_walk=False,
-            show_animation=False,
-            show_last_frame=False
-        )
+    dla = DLAOriginal(grid_size=grid_size)
+    dla.dlaoriginal_cluster(
+        initial_position=initial_walker_position,
+        log_cluster_every_n_iterations=LOG_CLUSTER_EVERY_N_ITERATIONS,
+        log_every_random_walk=False,
+        show_animation=True,
+        show_last_frame=True
+    )

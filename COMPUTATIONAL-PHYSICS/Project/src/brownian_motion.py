@@ -9,11 +9,6 @@ from animation import Animation
 from theoretical_tools import plot_mean_displacement
 
 
-
-import sys
-np.set_printoptions(threshold=sys.maxsize)
-
-
 class BrownianMotion(WalkersGrid):
     def __init__(self, **kwargs):
         """
@@ -107,14 +102,18 @@ class BrownianMotion(WalkersGrid):
 
             # Animation function.
             animate = Animation()
-            animate.brownian_motion_animation(state_frame, position_frame, 30)
+            animate.brownian_motion_animation(state_frame, position_frame, 60)
+            plt.show()
 
         if show_last_frame:
             position_sum += position_grid.state
             print(np.shape(position_sum))
 
             # Plot last frame.
-            plt.imshow(self.state + position_sum, cmap='CMRmap', vmin = 0, vmax = np.amax(position_sum + self.state))
+            plt.imshow(self.state + position_sum, cmap='winter', vmin = 0, vmax = np.amax(position_sum + self.state))
+
+            plt.savefig(f'BM_{self.grid_size}grid_{number_of_steps}step.pdf', dpi = 300, bbox_inches = 'tight')
+
             plt.show()
 
         return current_position

@@ -123,7 +123,7 @@ class DLA(WalkersGrid):
 
             # Animation function.
             animate = Animation()
-            animate.DLA_animation(state_frame, 30)
+            animate.DLA_animation(state_frame, 30, 'new')
 
         if show_last_frame:
             frame_sum += frame
@@ -133,7 +133,10 @@ class DLA(WalkersGrid):
                 frame_sum[x, y] = -1 * (frame_sum[x, y] - maximum)
 
             # Plot last frame.
-            plt.imshow(frame_sum, cmap='CMRmap', vmin = 0, vmax = maximum)
+            plt.imshow(frame_sum, cmap='winter', vmin = 0, vmax = maximum)
+
+            plt.savefig(f'DLAnew_{self.walkers_count}walkers_{self.grid_size}.pdf', dpi = 300, bbox_inches = 'tight')
+
             plt.show()
 
 
