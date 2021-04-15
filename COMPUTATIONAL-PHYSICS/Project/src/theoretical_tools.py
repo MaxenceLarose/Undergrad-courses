@@ -11,9 +11,21 @@ def get_mass_within_radius(
         radius: np.ndarray,
         fractal_dimensionality: float,
         arbitrary_constant: float
-):
+) -> np.ndarray:
     """
-    The mass of the
+    This functions returns the mass of a cluster given the radius of this cluster, its fractal dimensionality and an
+    arbitrary constant.
+
+    Parameters
+    ----------
+    radius (np.ndarray): Radius of the clusters.
+    fractal_dimensionality (float): Fractal dimensionality of the clusters.
+    arbitrary_constant (float): An arbitrary constant used for the fit.
+
+    Returns
+    -------
+    mass (np.ndarray): Mass of the cluster. The mass of a cluster is equal to the number of walkers added to this
+                       cluster.
     """
     mass = arbitrary_constant*radius**fractal_dimensionality
 
@@ -24,11 +36,26 @@ def get_fractal_dimension(
         radius: list,
         mass: list,
 ):
+    """
+    This functions returns the mass of a cluster given the radius of this cluster, its fractal dimensionality and an
+    arbitrary constant.
+
+    Parameters
+    ----------
+    radius (list): Radius of the clusters.
+    mass (list): Mass of the clusters. The mass of a cluster is equal to the number of walkers added to this
+                 cluster.
+
+    Returns
+    -------
+    Fig and axes.
+    """
     param, param_covariance = curve_fit(
         f=get_mass_within_radius,
         xdata=radius,
         ydata=mass
     )
+
     logging.info(f"Fractal Dimensionality is {param[0]}")
     radius_array = np.arange(np.asarray(radius).min(), np.asarray(radius).max(), 1)
 

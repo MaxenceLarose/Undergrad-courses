@@ -339,7 +339,7 @@ if __name__ == "__main__":
     #                                  Fractal Dimensionality analysis                                            #
     # ----------------------------------------------------------------------------------------------------------- #
     if show_fractal_dimensionality:
-        GRID_SIZE_LIST = np.arange(50, 300, 10)
+        GRID_SIZE_LIST = np.arange(101, 301, 10)
         LOG_CLUSTER_EVERY_N_ITERATIONS = 1000
 
         show_fractal_dimension(
