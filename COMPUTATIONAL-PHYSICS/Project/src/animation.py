@@ -81,6 +81,7 @@ class Animation():
 
         # Number of frames to animate
         nframes = len(state_frames)
+        print(nframes)
 
         # Sum frames for heat map of the walker's positions
         frame = []
