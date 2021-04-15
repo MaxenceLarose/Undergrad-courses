@@ -60,7 +60,7 @@ class BrownianMotion(WalkersGrid):
         # random walk loop for the number of steps chosen.
         for step in range(number_of_steps):
 
-            # Set a secondary grid to keep track of current position
+            # Set a secondary grid to keep track of current position.
             position_grid = WalkersGrid(grid_size=self.grid_size)
             position_grid.set_state(position=current_position, state=1, add_new_walker=False)
 
@@ -79,7 +79,7 @@ class BrownianMotion(WalkersGrid):
                 filter_diagonal=True
             )
 
-            # Decide where the walker will go next in it's adjacent positions
+            # Decide where the walker will go next in it's adjacent positions.
             next_position = self.get_random_adjacent_position(
                 adjacent_positions=adjacent_positions,
                 avoid_other_walkers=False,
@@ -95,32 +95,27 @@ class BrownianMotion(WalkersGrid):
 
             current_position = next_position
 
-        # Set a secondary grid to keep track of last position
+        # Set a secondary grid to keep track of last position.
         position_grid = WalkersGrid(grid_size=self.grid_size)
         position_grid.set_state(position=current_position, state=1, add_new_walker=False)
 
-        # Add current position and grid state for figure purposes.
+        # Add current position and grid state for figure purposes and animate.
         if show_animation:
             frame = self.state.copy()
             state_frame.append(frame)
             position_frame.append(position_grid.state)
+
+            # Animation function.
+            animate = Animation()
+            animate.brownian_motion_animation(state_frame, position_frame, 30)
+
         if show_last_frame:
             position_sum += position_grid.state
             print(np.shape(position_sum))
 
-
-        # Plot different wanted figures (animation and/or image of the last frame)
-        if show_animation:
-            animate = Animation()
-            animate.brownian_motion_animation(state_frame, position_frame, 30)
-        else:
-            pass
-
-        if show_last_frame:
-            plt.imshow(self.state + position_sum, cmap='CMRmap', vmin = 0, vmax = np.amax(position_sum + self.state.copy()))
+            # Plot last frame.
+            plt.imshow(self.state + position_sum, cmap='CMRmap', vmin = 0, vmax = np.amax(position_sum + self.state))
             plt.show()
-        else:
-            pass
 
         return current_position
 

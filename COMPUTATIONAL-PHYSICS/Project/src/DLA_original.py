@@ -62,7 +62,6 @@ class DLAOriginal(WalkersGrid):
                 frame = self.state.copy()
                 state_frame.append(frame)
                 spawn_position, r = self.walker_spawn_coordinates(initial_position, frame)
-                print('r',r)
             else:
                 pass
 
@@ -114,8 +113,10 @@ class DLAOriginal(WalkersGrid):
 
             if (self.walkers_count % log_cluster_every_n_iterations) == 0:
                 logging.info(f"Current number of walkers: {self.walkers_count}")
+                print(f"Spawning circle radius = {r}")
 
         logging.info(f"Total number of walkers: {self.walkers_count}")
+        print(f"Spawning circle radius = {r}")
 
         frame = self.state.copy()
         state_frame.append(frame)
@@ -235,7 +236,7 @@ if __name__ == "__main__":
     center = int((grid_size - 1)/2)
     initial_walker_position = (center, center)
 
-    LOG_CLUSTER_EVERY_N_ITERATIONS = 10
+    LOG_CLUSTER_EVERY_N_ITERATIONS = 100
 
     logging.info(f"Initial position is {initial_walker_position}.")
     # ----------------------------------------------------------------------------------------------------------- #
