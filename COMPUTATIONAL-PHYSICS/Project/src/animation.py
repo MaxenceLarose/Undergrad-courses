@@ -7,15 +7,12 @@ class Animation():
     def __init__(self):
         pass
 
-
-
     def brownian_motion_animation(
             self,
             state_frames : List[np.ndarray],
             position_frames : List[np.ndarray],
             fps : int
     ):
-
         """
         This function animates the state_frames from the brownian_motion.
 
@@ -30,23 +27,25 @@ class Animation():
         None
         """
 
+        # Number of frames to animate
         nframes = len(state_frames)
 
-        fig = plt.figure()
-
-
-
+        # Sum frames for heat map of the walker's positions
         frame = []
         position_prec = 0
+
         for i in range(len(state_frames)):
             position_sum = position_frames[i] + position_prec
             frame.append(state_frames[i] + position_sum)
             position_prec = position_sum
 
+        # Take maximum pixel magnitude to set cmap in order for the last walker's position to be highlighted.
         maximum = np.amax(frame[-1])
 
         frame = np.asarray(frame)
 
+        # Create figure and animation
+        fig = plt.figure()
         im_state = plt.imshow(frame[0] + (maximum+1)*position_frames[0], cmap='CMRmap', vmin = 0, vmax = maximum+1)
 
         def init():
@@ -67,7 +66,6 @@ class Animation():
             state_frames : List[np.ndarray],
             fps : int
     ):
-
         """
         This function animates the state_frames from the DLA and the DLA original.
 
@@ -81,12 +79,10 @@ class Animation():
         None
         """
 
+        # Number of frames to animate
         nframes = len(state_frames)
 
-        fig = plt.figure()
-
-
-
+        # Sum frames for heat map of the walker's positions
         frame = []
         frame_prec = 0
         for i in range(len(state_frames)):
@@ -94,16 +90,19 @@ class Animation():
             frame.append(frame_sum)
             frame_prec = frame_sum
 
+        # Take maximum pixel magnitude to set cmap.
         maximum = np.amax(frame[-1])
 
         frame = np.asarray(frame)
 
+        # Reverse pixel magnitudes to have younger additions to the cluster be lighter for visibility and for the
+        # background to remain a dark color.
         nonzero = np.nonzero(frame)
-
         for (x,y,z) in zip(*nonzero):
             frame[x,y,z] = -1*(frame[x,y,z] - maximum)
 
-
+        # Create figure and animation
+        fig = plt.figure()
         im_state = plt.imshow(frame[0], cmap='CMRmap', vmin = 0, vmax = maximum)
 
         def init():

@@ -30,6 +30,5 @@ def plot_mean_displacement(distance, nb_steps, number_of_walkers):
 
 
 
-
 # Écart-type
 # Distance moyenne

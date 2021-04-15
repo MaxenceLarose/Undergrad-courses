@@ -2,6 +2,7 @@
 import logging
 from typing import Tuple, List
 import matplotlib.pyplot as plt
+import numpy as np
 
 from walkers_grid import WalkersGrid
 from src.tools import logs_file_setup, set_seed
@@ -25,7 +26,9 @@ class DLA(WalkersGrid):
             self,
             initial_position: Tuple[int, int],
             log_cluster_every_n_iterations: int,
-            log_every_random_walk: bool = False
+            log_every_random_walk: bool = False,
+            show_animation: bool = False,
+            show_last_frame: bool = False,
     ):
         """
         This function uses the DLA process to create fractal structures called Brownian trees as walkers aggregate into
@@ -42,65 +45,99 @@ class DLA(WalkersGrid):
         -------
         Fig and axes.
         """
+        # create lists to save different frames of the grid.
         state_frame = []
+        frame_sum = 0
+
+        # DLA loop.
         complete_cluster = False
         while not complete_cluster:
             current_position = initial_position
             complete_random_walk = False
 
+            # Add grid state for figure purposes.
             frame = self.state.copy()
-            state_frame.append(frame)
+            if show_animation:
+                state_frame.append(frame)
+            if show_last_frame:
+                frame_sum += frame
 
             if log_every_random_walk:
                 walker_grid = WalkersGrid(grid_size=self.grid_size)
                 walker_grid.set_state(position=current_position, state=1, add_new_walker=True)
 
+            # random walk loop the latest added walker.
             while not complete_random_walk:
+
+                # Get adjacent position of the walker
                 adjacent_positions = self.get_adjacent_positions(position=current_position,
                                                                  filter_positions_outside_bounds=False
-                                                                 )
+                                                              )
+                # Check if random walk is completed
                 complete_random_walk = self.check_walk_terminate_conditions(adjacent_positions)
 
+                # Decide where the walker will go next in it's adjacent positions.
                 next_position = self.get_random_adjacent_position(
                     adjacent_positions=adjacent_positions,
                     avoid_other_walkers=False,
                 )
 
+                # Decide walker's current position according to criteria.
                 if complete_random_walk:
                     pass
                 else:
                     current_position = next_position
 
+                #
                 if log_every_random_walk:
                     walker_grid.set_state(position=current_position, state=1, add_new_walker=False)
 
+            #
             if log_every_random_walk:
                 logging.info(f"Current number of walkers: {self.walkers_count}")
 
+            # Set grid state for walker last position.
             self.set_state(
                 position=current_position,
                 state=1,
                 add_new_walker=True
             )
 
+            # Check if the cluster is completed according to criteria.
             complete_cluster = self.check_dla_terminate_condition(
                 initial_position=initial_position,
                 final_position=current_position
             )
 
+            # Log the number of added walkers at each chosen number of walkers added.
             if (self.walkers_count % log_cluster_every_n_iterations) == 0:
                 logging.info(f"Current number of walkers: {self.walkers_count}")
 
+        # Log total walkers added to complete cluster.
         logging.info(f"Total number of walkers: {self.walkers_count}")
 
+        # Add current position and grid state for figure purposes and animate.
         frame = self.state.copy()
-        state_frame.append(frame)
+        if show_animation:
+            state_frame.append(frame)
 
-        # ---------------------------------------------------------------------
-        # Will be replaced by the corresponding function of the animation class
-        animate = Animation()
-        animate.DLA_animation(state_frame, 30)
-        # ---------------------------------------------------------------------
+            # Animation function.
+            animate = Animation()
+            animate.DLA_animation(state_frame, 30)
+
+        if show_last_frame:
+            frame_sum += frame
+            nonzero = np.nonzero(frame_sum)
+            maximum = np.amax(frame_sum)
+            for (x, y) in zip(*nonzero):
+                frame_sum[x, y] = -1 * (frame_sum[x, y] - maximum)
+
+            # Plot last frame.
+            plt.imshow(frame_sum, cmap='CMRmap', vmin = 0, vmax = maximum)
+            plt.show()
+
+
+
 
     def check_walk_terminate_conditions(
             self,
@@ -119,6 +156,8 @@ class DLA(WalkersGrid):
         -------
         terminate (bool): Terminate random walk.
         """
+
+        # Check if walker is in a valid position (grid edge) or adjacent to other walker to complete random walk.
         if not all(list(map(lambda location: self.validate_position(location), adjacent_positions))):
             terminate = True
         elif any(list(map(lambda location: self.state[location] == 1, adjacent_positions))):
@@ -146,6 +185,8 @@ class DLA(WalkersGrid):
         -------
         terminate (bool): Terminate DLA process.
         """
+
+        # Check if the last position of the latest added walker is the initial position (center of the grid).
         if final_position == initial_position:
             terminate = True
         else:
@@ -178,5 +219,7 @@ if __name__ == "__main__":
     dla.dla_cluster(
         initial_position=initial_walker_position,
         log_cluster_every_n_iterations=LOG_CLUSTER_EVERY_N_ITERATIONS,
-        log_every_random_walk=False
+        log_every_random_walk=False,
+        show_animation = True,
+        show_last_frame = True,
     )
