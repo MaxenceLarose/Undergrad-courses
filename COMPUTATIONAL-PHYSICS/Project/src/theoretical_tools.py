@@ -78,12 +78,16 @@ def get_fractal_dimension(
         s=30
     )
 
-    ax.set_title("Fractal Dimensionality", fontsize=18)
-    ax.set_xlabel("Log(Radius)", fontsize=18)
-    ax.set_ylabel("Log(Mass)", fontsize=18)
+    # ax.set_title("Dimension fractale", fontsize=18)
+    ax.set_xlabel("Logarithme du rayon de l'agrégat", fontsize=16)
+    ax.set_ylabel("Logarithme du nombre de particules \ndans le rayon donné", fontsize=16)
     ax.legend([f"Dimension fractale: {param[0]:.3f} \nCorrélation $R^2$: {param[1]:.3f}"])
     ax.minorticks_on()
     ax.set_xlim([min(np.log(radius_array)), max(np.log(radius_array))])
+    plt.tight_layout()
+    ax.grid()
+    save_name = "Fractal_Dimensionality"
+    plt.savefig(f"{save_name}.pdf", dpi=300)
     plt.show()
 
 
