@@ -154,16 +154,18 @@ class DLAOriginal(WalkersGrid):
 
         if show_last_frame:
             frame_sum += frame
-            nonzero = np.nonzero(frame_sum)
             maximum = np.amax(frame_sum)
-            for (x, y) in zip(*nonzero):
-                frame_sum[x, y] = -1 * (frame_sum[x, y] - maximum)
 
             # Plot last frame.
             plt.imshow(frame_sum, cmap=animate.colormap(), vmin = 1, vmax = maximum)
+            cbar = plt.colorbar()
+            cbar.set_label('Age of the walker [frame]', rotation=270, labelpad = 15)
+
             plt.savefig(f'DLAoriginal_{self.walkers_count}walkers_{self.grid_size}.pdf', dpi = 300, bbox_inches = 'tight')
 
+
             plt.show()
+
 
 
     def check_walk_terminate_conditions(

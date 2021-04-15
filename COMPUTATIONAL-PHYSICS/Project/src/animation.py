@@ -10,11 +10,26 @@ class Animation():
         pass
 
     def colormap(self,
-                 cmap1 : str = 'winter',
-                 cmap2 : str = 'cool'):
+                 reverse : bool = True
+                 ):
+        """
+         This function creates a custom colormap to use for plotting graphs and rendering animations.
+
+         Parameters
+         ----------
+         reverse (bool): if the colormap is to be flipped or not.
+         Returns
+         -------
+         my_cmap : colormap
+         """
         my_cmap1 = cm.winter(np.linspace(0.,1,256))
         my_cmap2 = cm.cool(np.linspace(0.,1,256))
-        my_cmap_tot = np.vstack((my_cmap1,my_cmap2))
+        if reverse:
+            my_cmap_tot = np.flip(np.vstack((my_cmap1,my_cmap2)),axis = 0)
+        else:
+            my_cmap_tot = np.vstack((my_cmap1, my_cmap2))
+
+
         my_cmap = colors.LinearSegmentedColormap.from_list('my_colormap', my_cmap_tot)
 
         my_cmap.set_under('k')
@@ -60,7 +75,10 @@ class Animation():
 
         # Create figure and animation
         fig = plt.figure()
-        im_state = plt.imshow(frame[0] + (maximum+1)*position_frames[0], cmap=self.colormap(), vmin = 1, vmax = maximum+1)
+        im_state = plt.imshow(frame[0] + (maximum+1)*position_frames[0], cmap=self.colormap(reverse = False),
+                              vmin = 1, vmax = maximum+1)
+        cbar = plt.colorbar()
+        cbar.set_label('Time spent on position [frame]', rotation = 270, labelpad = 15)
 
         def init():
             im_state.set_data(frame[0]+(maximum+1)*position_frames[0])
@@ -114,13 +132,12 @@ class Animation():
 
         # Reverse pixel magnitudes to have younger additions to the cluster be lighter for visibility and for the
         # background to remain a dark color.
-        nonzero = np.nonzero(frame)
-        for (x,y,z) in zip(*nonzero):
-            frame[x,y,z] = -1*(frame[x,y,z] - (maximum+1))
 
         # Create figure and animation
         fig = plt.figure()
         im_state = plt.imshow(frame[0], cmap=self.colormap(), vmin = 1, vmax = maximum+1)
+        cbar = plt.colorbar()
+        cbar.set_label('Age of the walker [frame]', rotation = 270, labelpad = 15)
 
         def init():
             im_state.set_data(frame[0])

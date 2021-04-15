@@ -109,11 +109,14 @@ class BrownianMotion(WalkersGrid):
             position_sum += position_grid.state
 
             # Plot last frame.
-            plt.imshow(self.state + position_sum, cmap=animate.colormap(), vmin = 1, vmax = np.amax(position_sum + self.state))
+            plt.imshow(self.state + position_sum, cmap=animate.colormap(reverse = False), vmin = 1,
+                       vmax = np.amax(position_sum + self.state))
+
+            cbar = plt.colorbar()
+            cbar.set_label('Time spent on position [frame]', rotation=270, labelpad = 15)
 
             plt.savefig(f'BM_{self.grid_size}grid_{number_of_steps}step.pdf', dpi = 300, bbox_inches = 'tight')
-
-            plt.show()
+            plt.close()
 
         return current_position
 
@@ -148,18 +151,27 @@ if __name__ == "__main__":
     # ----------------------------------------------------------------------------------------------------------- #
     #                                       Constants                                                             #
     # ----------------------------------------------------------------------------------------------------------- #
-    grid_size = 101
-    center = int((grid_size - 1)/2)
-    initial_walker_position = (center, center)
+    #grid_size = 101
+    #center = int((grid_size - 1)/2)
+    #initial_walker_position = (center, center)
 
-    nb_steps = 1000
+    #nb_steps = 1000
 
-    logging.info(f"Initial position is {initial_walker_position}.")
-    logging.info(f"The total number of steps is {nb_steps}.")
+    #logging.info(f"Initial position is {initial_walker_position}.")
+    #logging.info(f"The total number of steps is {nb_steps}.")
     # ----------------------------------------------------------------------------------------------------------- #
     #                                      Brownian Motion                                                        #
     # ----------------------------------------------------------------------------------------------------------- #
-    brownian = BrownianMotion(grid_size=grid_size)
-    brownian.random_walk(initial_position=initial_walker_position, number_of_steps=nb_steps, show_animation=True,
-                         show_last_frame=True)
-    brownian.show_final_distances(initial_position=initial_walker_position, number_of_steps=nb_steps, number_of_walkers=50)
+
+
+    steps = np.arange(100,1100,100)
+    grid_size = np.arange(101,505,101)
+    for size in grid_size:
+        for step in steps:
+            center = int((size - 1) / 2)
+            initial_walker_position = (center, center)
+            brownian = BrownianMotion(grid_size=size)
+            brownian.random_walk(initial_position=initial_walker_position, number_of_steps=step, show_animation=False,
+                                 show_last_frame=True)
+
+    #brownian.show_final_distances(initial_position=initial_walker_position, number_of_steps=nb_steps, number_of_walkers=50)
