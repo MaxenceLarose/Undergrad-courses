@@ -1,12 +1,63 @@
 import matplotlib.pyplot as plt
+import logging
+from typing import Tuple
 from scipy.stats import norm, rayleigh
+from scipy.optimize import curve_fit
 import numpy as np
 import matplotlib.mlab as mlab
 
 
-def get_fractal_dimension():
-    pass
+def get_mass_within_radius(
+        radius: np.ndarray,
+        fractal_dimensionality: float,
+        arbitrary_constant: float
+):
+    """
+    The mass of the
+    """
+    mass = arbitrary_constant*radius**fractal_dimensionality
 
+    return mass
+
+
+def get_fractal_dimension(
+        radius: list,
+        mass: list,
+):
+    param, param_covariance = curve_fit(
+        f=get_mass_within_radius,
+        xdata=radius,
+        ydata=mass
+    )
+    logging.info(f"Fractal Dimensionality is {param[0]}")
+    radius_array = np.arange(np.asarray(radius).min(), np.asarray(radius).max(), 1)
+
+    fig = plt.figure(figsize=(10, 6))
+    ax = fig.add_subplot(1, 1, 1)
+
+    line1, = ax.plot(
+        np.log(radius_array),
+        np.log(get_mass_within_radius(radius_array, *param)),
+        linestyle='--',
+        color='k',
+        lw=2
+    )
+
+    line2 = ax.scatter(
+        np.log(radius),
+        np.log(mass),
+        color='k',
+        edgecolors='k',
+        s=30
+    )
+
+    ax.set_title("Fractal Dimensionality", fontsize=18)
+    ax.set_xlabel("Log(Radius)", fontsize=18)
+    ax.set_ylabel("Log(Mass)", fontsize=18)
+    ax.legend([f"Dimension fractale: {param[0]:.3f} \nCorrélation $R^2$: {param[1]:.3f}"])
+    ax.minorticks_on()
+    ax.set_xlim([min(np.log(radius_array)), max(np.log(radius_array))])
+    plt.show()
 
 
 def plot_mean_displacement(distance, nb_steps, number_of_walkers):
