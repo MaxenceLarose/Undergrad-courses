@@ -69,11 +69,11 @@ class DLA(WalkersGrid):
             # random walk loop the latest added walker.
             while not complete_random_walk:
 
-                # Get adjacent position of the walker
+                # Get adjacent position of the walker.
                 adjacent_positions = self.get_adjacent_positions(position=current_position,
                                                                  filter_positions_outside_bounds=False
                                                               )
-                # Check if random walk is completed
+                # Check if random walk is completed.
                 complete_random_walk = self.check_walk_terminate_conditions(adjacent_positions)
 
                 # Decide where the walker will go next in it's adjacent positions.
@@ -82,7 +82,7 @@ class DLA(WalkersGrid):
                     avoid_other_walkers=False,
                 )
 
-                # Decide walker's current position according to criteria.
+                # Decide walker's current position according to criterion.
                 if complete_random_walk:
                     pass
                 else:
@@ -103,7 +103,7 @@ class DLA(WalkersGrid):
                 add_new_walker=True
             )
 
-            # Check if the cluster is completed according to criteria.
+            # Check if the cluster is completed according to criterion.
             complete_cluster = self.check_dla_terminate_condition(
                 initial_position=initial_position,
                 final_position=current_position
@@ -118,12 +118,12 @@ class DLA(WalkersGrid):
 
         # Add current position and grid state for figure purposes and animate.
         frame = self.state.copy()
+        animate = Animation()
         if show_animation:
             state_frame.append(frame)
 
             # Animation function.
-            animate = Animation()
-            animate.DLA_animation(state_frame, 30)
+            animate.DLA_animation(state_frame, 30, 'new')
 
         if show_last_frame:
             frame_sum += frame
@@ -133,7 +133,10 @@ class DLA(WalkersGrid):
                 frame_sum[x, y] = -1 * (frame_sum[x, y] - maximum)
 
             # Plot last frame.
-            plt.imshow(frame_sum, cmap='CMRmap', vmin = 0, vmax = maximum)
+            plt.imshow(frame_sum, cmap=animate.colormap(), vmin = 1, vmax = maximum)
+
+            plt.savefig(f'DLAnew_{self.walkers_count}walkers_{self.grid_size}.pdf', dpi = 300, bbox_inches = 'tight')
+
             plt.show()
 
 

@@ -1,11 +1,25 @@
 import matplotlib.pyplot as plt
 import matplotlib.animation as anim
+from matplotlib.animation import PillowWriter
+from matplotlib import cm,colors
 import numpy as np
 from typing import List
 
 class Animation():
     def __init__(self):
         pass
+
+    def colormap(self,
+                 cmap1 : str = 'winter',
+                 cmap2 : str = 'cool'):
+        my_cmap1 = cm.winter(np.linspace(0.,1,256))
+        my_cmap2 = cm.cool(np.linspace(0.,1,256))
+        my_cmap_tot = np.vstack((my_cmap1,my_cmap2))
+        my_cmap = colors.LinearSegmentedColormap.from_list('my_colormap', my_cmap_tot)
+
+        my_cmap.set_under('k')
+
+        return my_cmap
 
     def brownian_motion_animation(
             self,
@@ -46,7 +60,7 @@ class Animation():
 
         # Create figure and animation
         fig = plt.figure()
-        im_state = plt.imshow(frame[0] + (maximum+1)*position_frames[0], cmap='CMRmap', vmin = 0, vmax = maximum+1)
+        im_state = plt.imshow(frame[0] + (maximum+1)*position_frames[0], cmap=self.colormap(), vmin = 1, vmax = maximum+1)
 
         def init():
             im_state.set_data(frame[0]+(maximum+1)*position_frames[0])
@@ -58,13 +72,16 @@ class Animation():
 
         animated = anim.FuncAnimation(fig,animate_func, init_func = init, frames = nframes, interval = 1000/fps)
 
+        animated.save(f'BM_{np.shape(frame[-1])[0]}grid_{nframes}steps.gif', writer=PillowWriter(fps=30))
+
         plt.show()
 
 
     def DLA_animation(
             self,
             state_frames : List[np.ndarray],
-            fps : int
+            fps : int,
+            DLA_type : str = ''
     ):
         """
         This function animates the state_frames from the DLA and the DLA original.
@@ -99,11 +116,11 @@ class Animation():
         # background to remain a dark color.
         nonzero = np.nonzero(frame)
         for (x,y,z) in zip(*nonzero):
-            frame[x,y,z] = -1*(frame[x,y,z] - maximum)
+            frame[x,y,z] = -1*(frame[x,y,z] - (maximum+1))
 
         # Create figure and animation
         fig = plt.figure()
-        im_state = plt.imshow(frame[0], cmap='CMRmap', vmin = 0, vmax = maximum)
+        im_state = plt.imshow(frame[0], cmap=self.colormap(), vmin = 1, vmax = maximum+1)
 
         def init():
             im_state.set_data(frame[0])
@@ -114,7 +131,7 @@ class Animation():
             return [im_state]
 
         animated = anim.FuncAnimation(fig,animate_func, init_func = init, frames = nframes, interval = 1000/fps)
-
+        animated.save(f'DLA{DLA_type}_{nframes}walkers_{np.shape(frame[-1])[0]}.gif', writer=PillowWriter(fps=30))
         plt.show()
 
 

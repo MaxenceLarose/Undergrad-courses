@@ -6,6 +6,7 @@ from walkers_grid import WalkersGrid
 from src.tools import logs_file_setup, set_seed
 import numpy as np
 from random import random
+import matplotlib.pyplot as plt
 
 from animation import Animation
 
@@ -27,7 +28,9 @@ class DLAOriginal(WalkersGrid):
             self,
             initial_position: Tuple[int, int],
             log_cluster_every_n_iterations: int,
-            log_every_random_walk: bool = False
+            log_every_random_walk: bool = False,
+            show_animation: bool = False,
+            show_last_frame: bool = False,
     ):
         """
         This function uses the DLA original process to create fractal structures called Brownian trees as walkers
@@ -45,27 +48,42 @@ class DLAOriginal(WalkersGrid):
         Fig and axes.
         """
 
+        # set initial spawning radius r to 0.
         r = 0
+
         state_frame = []
         complete_cluster = False
+
+        # Spawning initial central walker.
         spawn_position = initial_position
         self.set_state(
             position=initial_position,
             state=1,
             add_new_walker=True)
-        position_list = []
+
+        # create variable to save latest frame in.
+        frame_sum  = self.state.copy()
+
         added_walker = True
         radius_bounds = False
+
+        # DLA original loop.
         while not complete_cluster:
 
+            #   Check if walker added to save grid state.
+            frame = self.state.copy()
+            if added_walker:
+                if show_animation:
+                    state_frame.append(frame)
+                if show_last_frame:
+                    frame_sum += frame
+
+            #   Check if walker added to cluster or if walker broke radius boundaries to spawn walker on circle.
             if added_walker or radius_bounds:
-                frame = self.state.copy()
-                state_frame.append(frame)
                 spawn_position, r = self.walker_spawn_coordinates(initial_position, frame)
-            else:
-                pass
 
 
+            # reinstate loop criteria.
             current_position = spawn_position
             complete_random_walk = False
             radius_bounds = False
@@ -75,54 +93,76 @@ class DLAOriginal(WalkersGrid):
                 walker_grid = WalkersGrid(grid_size=self.grid_size)
                 walker_grid.set_state(position=current_position, state=1, add_new_walker=True)
 
+            # random walk loop the latest added walker.
             while not complete_random_walk and not radius_bounds:
+
+                # Get adjacent position of the walker.
                 adjacent_positions = self.get_adjacent_positions(position=current_position,
                                                                  filter_positions_outside_bounds=False
                                                                  )
+                # Check if random walk is completed.
                 complete_random_walk, radius_bounds = self.check_walk_terminate_conditions(adjacent_positions, initial_position, r)
 
-
+                # Decide where the walker will go next in it's adjacent positions.
                 next_position = self.get_random_adjacent_position(
                     adjacent_positions=adjacent_positions,
                     avoid_other_walkers=False,
                 )
 
+                # Decide walker's current position according to criterion and add position to calculate radius.
                 if complete_random_walk:
                     self.set_state(
                         position=current_position,
                         state=1,
                         add_new_walker=True)
-                    position_list.append(current_position)
                     added_walker = True
                 else:
                     current_position = next_position
                     added_walker = False
 
+                #
                 if log_every_random_walk:
                     walker_grid.set_state(position=current_position, state=1, add_new_walker=False)
 
+            #
             if log_every_random_walk:
                 logging.info(f"Current number of walkers: {self.walkers_count}")
 
 
-
+            # Check if the cluster is completed according to criterion.
             complete_cluster = self.check_dla_terminate_condition(
                 r = r
             )
 
-
+            # Log the number of added walkers at each chosen number of walkers added.
             if (self.walkers_count % log_cluster_every_n_iterations) == 0:
                 logging.info(f"Current number of walkers: {self.walkers_count}")
-                print(f"Spawning circle radius = {r}")
 
+        # Log total walkers added to complete cluster.
         logging.info(f"Total number of walkers: {self.walkers_count}")
-        print(f"Spawning circle radius = {r}")
+        print(f"Spawning circle final radius = {r}")
 
+        # Add current position and grid state for figure purposes and animate.
         frame = self.state.copy()
-        state_frame.append(frame)
+        if show_animation:
+            state_frame.append(frame)
 
-        animate = Animation()
-        animate.DLA_animation(state_frame, 30)
+            # Animation function.
+            animate = Animation()
+            animate.DLA_animation(state_frame, 30, 'original')
+
+        if show_last_frame:
+            frame_sum += frame
+            nonzero = np.nonzero(frame_sum)
+            maximum = np.amax(frame_sum)
+            for (x, y) in zip(*nonzero):
+                frame_sum[x, y] = -1 * (frame_sum[x, y] - maximum)
+
+            # Plot last frame.
+            plt.imshow(frame_sum, cmap='winter', vmin = 0, vmax = maximum)
+            plt.savefig(f'DLAoriginal_{self.walkers_count}walkers_{self.grid_size}.pdf', dpi = 300, bbox_inches = 'tight')
+
+            plt.show()
 
 
     def check_walk_terminate_conditions(
@@ -147,13 +187,15 @@ class DLAOriginal(WalkersGrid):
         -------
         (terminate,terminate_circle) Tuple[bool,bool]: Terminate random walk.
         """
+
+        # Check if the walker is in a valid position or next to another walker.
+        terminate = False
         if not all(list(map(lambda location: self.validate_position(location), adjacent_positions))):
-            terminate = True
+            terminate_radius = True
         elif any(list(map(lambda location: self.state[location] == 1, adjacent_positions))):
             terminate = True
-        else:
-            terminate = False
 
+        # Check if the position of the walker is within a radius of approximately 2r of the center.
         for position in adjacent_positions:
             distance = np.linalg.norm([position[0]-initial_position[0],position[1]-initial_position[1]])
             if 2*r < round(distance):
@@ -178,11 +220,12 @@ class DLAOriginal(WalkersGrid):
         -------
         terminate (bool): Terminate DLA process.
         """
-        if r == np.floor(self.grid_size/4):
+
+        # Check if the walker spawning circle has a radius larger than a quarter of the grid's size.
+        if np.floor(self.grid_size/4) <= r:
             terminate = True
         else:
             terminate = False
-
 
         return terminate
 
@@ -204,15 +247,22 @@ class DLAOriginal(WalkersGrid):
         next_max_dist: Approximate distance from the center at which the walker is spawned.
         """
 
-
+        # Get the indices for which the current grid_state is not zero (occupied by walker).
         x,y = np.nonzero(np.asarray(frame))
+
+        # Get distance to the initial position of the walkers.
         dist = ((x-initial_position[0])**2+(y-initial_position[1])**2)**(1/2)
+
+        # Get maximal distance.
         max_dist = np.floor(np.amax(dist))
+
+        # Decide next_maximal distance allowed (r).
         next_max_dist = max_dist + 1
 
-
+        # Generate random angle at which to spawn walker.
         theta = random()*2*np.pi
 
+        # Generate spawn coordinates for next walker.
         x = round(next_max_dist*np.cos(theta)) + initial_position[0]
         y = round(next_max_dist*np.sin(theta)) + initial_position[1]
 
@@ -243,9 +293,10 @@ if __name__ == "__main__":
     #                                            DLA                                                              #
     # ----------------------------------------------------------------------------------------------------------- #
     dla = DLAOriginal(grid_size=grid_size)
-
     dla.dlaoriginal_cluster(
         initial_position=initial_walker_position,
         log_cluster_every_n_iterations=LOG_CLUSTER_EVERY_N_ITERATIONS,
-        log_every_random_walk=False
+        log_every_random_walk=False,
+        show_animation=True,
+        show_last_frame=True
     )

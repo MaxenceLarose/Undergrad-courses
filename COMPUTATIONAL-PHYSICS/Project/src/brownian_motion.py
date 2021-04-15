@@ -9,11 +9,6 @@ from animation import Animation
 from theoretical_tools import plot_mean_displacement
 
 
-
-import sys
-np.set_printoptions(threshold=sys.maxsize)
-
-
 class BrownianMotion(WalkersGrid):
     def __init__(self, **kwargs):
         """
@@ -100,21 +95,24 @@ class BrownianMotion(WalkersGrid):
         position_grid.set_state(position=current_position, state=1, add_new_walker=False)
 
         # Add current position and grid state for figure purposes and animate.
+        animate = Animation()
         if show_animation:
             frame = self.state.copy()
             state_frame.append(frame)
             position_frame.append(position_grid.state)
 
             # Animation function.
-            animate = Animation()
-            animate.brownian_motion_animation(state_frame, position_frame, 30)
+            animate.brownian_motion_animation(state_frame, position_frame, 60)
+            plt.show()
 
         if show_last_frame:
             position_sum += position_grid.state
-            print(np.shape(position_sum))
 
             # Plot last frame.
-            plt.imshow(self.state + position_sum, cmap='CMRmap', vmin = 0, vmax = np.amax(position_sum + self.state))
+            plt.imshow(self.state + position_sum, cmap=animate.colormap(), vmin = 1, vmax = np.amax(position_sum + self.state))
+
+            plt.savefig(f'BM_{self.grid_size}grid_{number_of_steps}step.pdf', dpi = 300, bbox_inches = 'tight')
+
             plt.show()
 
         return current_position
@@ -154,7 +152,7 @@ if __name__ == "__main__":
     center = int((grid_size - 1)/2)
     initial_walker_position = (center, center)
 
-    nb_steps = 100
+    nb_steps = 1000
 
     logging.info(f"Initial position is {initial_walker_position}.")
     logging.info(f"The total number of steps is {nb_steps}.")
