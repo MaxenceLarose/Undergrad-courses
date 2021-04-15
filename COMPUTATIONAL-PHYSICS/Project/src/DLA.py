@@ -96,11 +96,10 @@ class DLA(WalkersGrid):
         frame = self.state.copy()
         state_frame.append(frame)
 
-        # ---------------------------------------------------------------------
-        # Will be replaced by the corresponding function of the animation class
+
         animate = Animation()
         animate.DLA_animation(state_frame, 30)
-        # ---------------------------------------------------------------------
+
 
     def check_walk_terminate_conditions(
             self,

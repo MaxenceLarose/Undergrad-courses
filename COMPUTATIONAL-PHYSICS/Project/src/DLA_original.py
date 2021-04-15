@@ -62,9 +62,10 @@ class DLAOriginal(WalkersGrid):
                 frame = self.state.copy()
                 state_frame.append(frame)
                 spawn_position, r = self.walker_spawn_coordinates(initial_position, frame)
+                print('r',r)
             else:
                 pass
-            print('r',r)
+
 
             current_position = spawn_position
             complete_random_walk = False
