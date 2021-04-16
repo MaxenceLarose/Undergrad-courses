@@ -9,6 +9,7 @@ from random import random
 import matplotlib.pyplot as plt
 
 from animation import Animation
+from theoretical_tools import plot_fractal_dimension
 
 
 class DLAOriginal(WalkersGrid):
@@ -144,25 +145,27 @@ class DLAOriginal(WalkersGrid):
 
         # Add current position and grid state for figure purposes and animate.
         frame = self.state.copy()
+        animate = Animation()
         if show_animation:
             state_frame.append(frame)
 
             # Animation function.
-            animate = Animation()
             animate.DLA_animation(state_frame, 30, 'original')
 
         if show_last_frame:
             frame_sum += frame
-            nonzero = np.nonzero(frame_sum)
             maximum = np.amax(frame_sum)
-            for (x, y) in zip(*nonzero):
-                frame_sum[x, y] = -1 * (frame_sum[x, y] - maximum)
 
             # Plot last frame.
-            plt.imshow(frame_sum, cmap='winter', vmin = 0, vmax = maximum)
+            plt.imshow(frame_sum, cmap=animate.colormap(), vmin = 1, vmax = maximum)
+            cbar = plt.colorbar()
+            cbar.set_label('Age of the walker [frame]', rotation=270, labelpad = 15)
+
             plt.savefig(f'DLAoriginal_{self.walkers_count}walkers_{self.grid_size}.pdf', dpi = 300, bbox_inches = 'tight')
 
+
             plt.show()
+
 
 
     def check_walk_terminate_conditions(
@@ -269,8 +272,40 @@ class DLAOriginal(WalkersGrid):
         return (x,y), next_max_dist
 
 
+def show_fractal_dimension(
+        grid_size_list: list,
+        log_cluster_every_n_iterations: int,
+):
+    """
+    This function displays the figure of the mass of the cluster as a function of its radius. The curve fit on the data
+    of this figure provides the average fractal dimension of the DLA original cluster.
 
+    Parameters
+    ----------
+    grid_size_list (list): List of the grid sizes to use. The size of the grid determines the maximum radius of the
+                           cluster.
+    log_cluster_every_n_iterations (int): Display cluster formed by the walkers every n iterations.
 
+    Returns
+    -------
+    Fig and axes.
+    """
+    radius: list = []
+    walkers_count: list = []
+    for size in grid_size_list:
+        dla_cluster = DLAOriginal(grid_size=size)
+
+        center_position = int((size - 1) / 2)
+        initial_position = (center_position, center_position)
+
+        dla_cluster.dlaoriginal_cluster(
+            initial_position=initial_position,
+            log_cluster_every_n_iterations=log_cluster_every_n_iterations
+        )
+        radius.append(size / 4)
+        walkers_count.append(dla_cluster.walkers_count)
+
+    plot_fractal_dimension(radius=radius, mass=walkers_count)
 
 
 if __name__ == "__main__":
@@ -285,7 +320,7 @@ if __name__ == "__main__":
     grid_size = 101
     center = int((grid_size - 1)/2)
     initial_walker_position = (center, center)
-
+    show_fractal_dimensionality = True
     LOG_CLUSTER_EVERY_N_ITERATIONS = 100
 
     logging.info(f"Initial position is {initial_walker_position}.")
@@ -300,3 +335,14 @@ if __name__ == "__main__":
         show_animation=True,
         show_last_frame=True
     )
+    # ----------------------------------------------------------------------------------------------------------- #
+    #                                  Fractal Dimensionality analysis                                            #
+    # ----------------------------------------------------------------------------------------------------------- #
+    if show_fractal_dimensionality:
+        GRID_SIZE_LIST = np.arange(101, 301, 10)
+        LOG_CLUSTER_EVERY_N_ITERATIONS = 1000
+
+        show_fractal_dimension(
+            grid_size_list=GRID_SIZE_LIST,
+            log_cluster_every_n_iterations=LOG_CLUSTER_EVERY_N_ITERATIONS
+        )
