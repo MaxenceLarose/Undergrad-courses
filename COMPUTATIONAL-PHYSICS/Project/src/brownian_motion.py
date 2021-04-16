@@ -134,8 +134,6 @@ class BrownianMotion(WalkersGrid):
                 show_animation=False
             )
             distance.append(np.linalg.norm(np.asarray(last_position) - np.asarray(initial_position)))
-        print(np.mean(distance))
-        print(np.sqrt(np.mean(np.asarray(distance)**2)))
 
         plot_mean_displacement(distance=np.asarray(distance), nb_steps=nb_steps, number_of_walkers=number_of_walkers)
 
@@ -164,14 +162,16 @@ if __name__ == "__main__":
     # ----------------------------------------------------------------------------------------------------------- #
 
 
-    steps = np.arange(100,1100,100)
-    grid_size = np.arange(101,505,101)
-    for size in grid_size:
-        for step in steps:
-            center = int((size - 1) / 2)
-            initial_walker_position = (center, center)
-            brownian = BrownianMotion(grid_size=size)
-            brownian.random_walk(initial_position=initial_walker_position, number_of_steps=step, show_animation=False,
-                                 show_last_frame=True)
+    # steps = np.arange(100,1100,100)
+    # grid_size = np.arange(101,505,101)
+    # for size in grid_size:
+    #     for step in steps:
+    #         center = int((size - 1) / 2)
+    #         initial_walker_position = (center, center)
+    #         brownian = BrownianMotion(grid_size=size)
+    #         brownian.random_walk(initial_position=initial_walker_position, number_of_steps=step, show_animation=False,
+    #                              show_last_frame=True)
 
-    #brownian.show_final_distances(initial_position=initial_walker_position, number_of_steps=nb_steps, number_of_walkers=50)
+    nb_steps = 1000
+
+    brownian.show_final_distances(initial_position=initial_walker_position, number_of_steps=nb_steps, number_of_walkers=50)

@@ -96,21 +96,25 @@ def plot_mean_displacement(distance, nb_steps, number_of_walkers):
     show_properties(nb_steps=nb_steps)
     n, bins, patches = plt.hist(distance, histtype='stepfilled', alpha=0.5, bins=30, density=True)
     loc, sigma = rayleigh.fit(data=distance)
-    print(f"loc: {loc} and sigma: {sigma}")
+    logging.info(f"loc: {loc} and sigma: {sigma}")
     x = np.linspace(0, distance.max()+5, 100)
     pdf_fitted = rayleigh.pdf(x, loc, sigma)
     plt.plot(x, pdf_fitted, color='r')
     rms = np.sqrt(nb_steps)
-    rms_ex = np.sqrt(np.mean(np.asarray(distance)**2))
+    rms_exp = np.sqrt(np.mean(np.asarray(distance)**2))
     var_exp = (sigma ** 2) * ((4 - np.pi) / 2)
+    std_exp = np.sqrt(var_exp)
+    mean_exp = sigma*np.sqrt(np.pi/2)
     plt.vlines(rms, 0, pdf_fitted.max(), linestyle='--', color='k', linewidth=1)
-    plt.vlines(rms_ex, 0, pdf_fitted.max(), linestyles='--', color='grey', linewidth=1)
+    plt.vlines(rms_exp, 0, pdf_fitted.max(), linestyles='--', color='grey', linewidth=1)
     plt.xlabel('Distance moyenne parcourue')
     plt.ylabel('Probabilité [-]')
-    plt.title('Distance moyenne parcourue pour {} marches aléatoires '.format(number_of_walkers))
-    plt.legend(['Rayleigh $\sigma =$ {}'.format(sigma), '$N$ = {}'.format(nb_steps), 'RMS = {}'. format(rms),
-                'RMS (exp) = {}'.format(rms_ex)])
-    print('Var_exp = ', var_exp)
+    plt.title(f'Distance moyenne parcourue pour {number_of_walkers} marches aléatoires ')
+    plt.legend([f'Rayleigh $\sigma =$ {sigma}', f'$N$ = {nb_steps}', f'RMS = {rms}',
+                f'RMS (exp) = {rms_exp}'])
+    logging.info(f'Var (exp) = {var_exp}')
+    logging.info(f'Valeur moyenne (exp) = {mean_exp}')
+    logging.info(f'Écart-type (exp) = {std_exp}')
     plt.show()
 
 
@@ -118,9 +122,11 @@ def show_properties(nb_steps):
     rms = np.sqrt(nb_steps)
     sigma_theo = rms/np.sqrt(2)
     var_theo = (sigma_theo**2)*((4-np.pi)/2)
+    std_theo = np.sqrt(var_theo)
+    mean_theo = sigma_theo*np.sqrt(np.pi/2)
+    logging.info(f"RMS (theorie) = {rms}")
+    logging.info(f"$\sigma$ (theorie) = {sigma_theo}")
+    logging.info(f"Variance (theorie) = {var_theo}")
+    logging.info(f"Écart-type (theorie) = {std_theo}")
+    logging.info(f"Valeur moyenne (theorie) = {mean_theo}")
 
-
-
-
-# Écart-type
-# Distance moyenne
