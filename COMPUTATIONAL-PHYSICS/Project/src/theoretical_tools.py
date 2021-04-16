@@ -144,26 +144,32 @@ def show_properties(nb_steps):
 def plot_2d_displacement(
         last_positions: List[Tuple],
         nb_steps: int,
-        grid_size: int
+        grid_size: int,
+        number_of_walkers: int
 ):
     x, y = list(map(list, zip(*last_positions)))
-    fig = plt.figure(figsize=(10, 6))
+
+    fig = plt.figure(figsize=(8, 8))
     ax = fig.add_subplot(1, 1, 1)
 
     line1 = ax.scatter(
         x,
         y,
-        color='k',
-        edgecolors='k',
-        s=3
+        color='r',
+        alpha=0.1,
+        edgecolors=None,
+        s=15
     )
 
     ax.set_xlabel("Coordonnée x", fontsize=16)
     ax.set_ylabel("Coordonnée y", fontsize=16)
-    ax.legend([f"Nombre de pas: {nb_steps}"], fontsize=16)
-    ax.axvline()
+    ax.legend([f"Nombre de particules: {number_of_walkers}\nNombre de pas par marche: {nb_steps}"], fontsize=16)
+    ax.axvline(int((grid_size - 1)/2), color='gray')
+    ax.axhline(int((grid_size - 1)/2), color='gray')
+    ax.set_xlim([0, grid_size])
+    ax.set_ylim([0, grid_size])
     ax.minorticks_on()
     plt.tight_layout()
     save_name = "2D_distribution_brownian_motion_"
-    plt.savefig(f"{save_name}{nb_steps}.pdf", dpi=300)
+    plt.savefig(f"{save_name}{grid_size}grid_{nb_steps}step_{number_of_walkers}walkers.pdf", dpi=300)
     plt.show()

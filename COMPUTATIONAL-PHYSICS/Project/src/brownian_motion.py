@@ -138,11 +138,19 @@ class BrownianMotion(WalkersGrid):
             distance.append(np.linalg.norm(np.asarray(last_position) - np.asarray(initial_position)))
             last_positions.append(last_position)
 
-        print(np.mean(distance))
-        print(np.sqrt(np.mean(np.asarray(distance)**2)))
+        plot_mean_displacement(
+            distance=np.asarray(distance),
+            nb_steps=nb_steps,
+            number_of_walkers=number_of_walkers
+        )
 
-        plot_mean_displacement(distance=np.asarray(distance), nb_steps=nb_steps, number_of_walkers=number_of_walkers)
-        plot_2d_displacement(last_positions=last_positions, nb_steps=nb_steps, grid_size=size)
+        plot_2d_displacement(
+            last_positions=last_positions,
+            nb_steps=nb_steps,
+            grid_size=size,
+            number_of_walkers=number_of_walkers
+        )
+
 
 if __name__ == "__main__":
     # ----------------------------------------------------------------------------------------------------------- #
@@ -157,7 +165,7 @@ if __name__ == "__main__":
     center = int((grid_size - 1)/2)
     initial_walker_position = (center, center)
 
-    nb_steps = 1000
+    nb_steps = 100
 
     logging.info(f"Initial position is {initial_walker_position}.")
     logging.info(f"The total number of steps is {nb_steps}.")
@@ -178,6 +186,6 @@ if __name__ == "__main__":
 
     brownian.show_final_distances(initial_position=initial_walker_position,
                                   number_of_steps=nb_steps,
-                                  number_of_walkers=50,
+                                  number_of_walkers=1000,
                                   size=grid_size)
 
