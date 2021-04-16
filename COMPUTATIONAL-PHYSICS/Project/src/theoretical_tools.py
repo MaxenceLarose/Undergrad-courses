@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 import logging
-from typing import Tuple
+from typing import Tuple, List
 from scipy.stats import norm, rayleigh
 from scipy.optimize import curve_fit
 import numpy as np
@@ -56,6 +56,16 @@ def plot_fractal_dimension(
         ydata=mass
     )
 
+    residuals = mass - get_mass_within_radius(
+        radius=np.asarray(radius),
+        fractal_dimensionality=param[0],
+        arbitrary_constant=param[1]
+    )
+
+    ss_res = np.sum(residuals ** 2)
+    ss_tot = np.sum((mass - np.mean(mass)) ** 2)
+    r_squared = 1 - (ss_res / ss_tot)
+
     logging.info(f"Fractal Dimensionality is {param[0]}")
     radius_array = np.arange(np.asarray(radius).min() - 1, np.asarray(radius).max() + 1, 1)
 
@@ -81,7 +91,7 @@ def plot_fractal_dimension(
     # ax.set_title("Dimension fractale", fontsize=18)
     ax.set_xlabel("Logarithme du rayon de l'agrégat", fontsize=16)
     ax.set_ylabel("Logarithme du nombre de particules \ndans le rayon donné", fontsize=16)
-    ax.legend([f"Dimension fractale: {param[0]:.3f} \nCorrélation $R^2$: {param_covariance[0]:.3f}"], fontsize=16)
+    ax.legend([f"Dimension fractale: {param[0]:.3f} \nCorrélation $R^2$: {r_squared:.3f}"], fontsize=16)
     ax.minorticks_on()
     ax.set_xlim([min(np.log(radius_array)), max(np.log(radius_array))])
     ax.tick_params(axis='both', labelsize=12)
@@ -130,3 +140,30 @@ def show_properties(nb_steps):
     logging.info(f"Écart-type (theorie) = {std_theo}")
     logging.info(f"Valeur moyenne (theorie) = {mean_theo}")
 
+
+def plot_2d_displacement(
+        last_positions: List[Tuple],
+        nb_steps: int,
+        grid_size: int
+):
+    x, y = list(map(list, zip(*last_positions)))
+    fig = plt.figure(figsize=(10, 6))
+    ax = fig.add_subplot(1, 1, 1)
+
+    line1 = ax.scatter(
+        x,
+        y,
+        color='k',
+        edgecolors='k',
+        s=3
+    )
+
+    ax.set_xlabel("Coordonnée x", fontsize=16)
+    ax.set_ylabel("Coordonnée y", fontsize=16)
+    ax.legend([f"Nombre de pas: {nb_steps}"], fontsize=16)
+    ax.axvline()
+    ax.minorticks_on()
+    plt.tight_layout()
+    save_name = "2D_distribution_brownian_motion_"
+    plt.savefig(f"{save_name}{nb_steps}.pdf", dpi=300)
+    plt.show()

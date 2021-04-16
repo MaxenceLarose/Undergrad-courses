@@ -6,7 +6,7 @@ import numpy as np
 from src.tools import logs_file_setup, set_seed
 from walkers_grid import WalkersGrid
 from animation import Animation
-from theoretical_tools import plot_mean_displacement
+from theoretical_tools import plot_mean_displacement, plot_2d_displacement
 
 
 class BrownianMotion(WalkersGrid):
@@ -124,9 +124,11 @@ class BrownianMotion(WalkersGrid):
             self,
             initial_position: Tuple[int, int],
             number_of_steps: int,
-            number_of_walkers: int
+            number_of_walkers: int,
+            size: int
     ):
         distance = []
+        last_positions = []
         for walker in range(number_of_walkers):
             last_position = self.random_walk(
                 initial_position=initial_position,
@@ -134,11 +136,13 @@ class BrownianMotion(WalkersGrid):
                 show_animation=False
             )
             distance.append(np.linalg.norm(np.asarray(last_position) - np.asarray(initial_position)))
+            last_positions.append(last_position)
+
+        print(np.mean(distance))
+        print(np.sqrt(np.mean(np.asarray(distance)**2)))
 
         plot_mean_displacement(distance=np.asarray(distance), nb_steps=nb_steps, number_of_walkers=number_of_walkers)
-
-
-
+        plot_2d_displacement(last_positions=last_positions, nb_steps=nb_steps, grid_size=size)
 
 if __name__ == "__main__":
     # ----------------------------------------------------------------------------------------------------------- #
@@ -149,14 +153,14 @@ if __name__ == "__main__":
     # ----------------------------------------------------------------------------------------------------------- #
     #                                       Constants                                                             #
     # ----------------------------------------------------------------------------------------------------------- #
-    #grid_size = 101
-    #center = int((grid_size - 1)/2)
-    #initial_walker_position = (center, center)
+    grid_size = 101
+    center = int((grid_size - 1)/2)
+    initial_walker_position = (center, center)
 
-    #nb_steps = 1000
+    nb_steps = 1000
 
-    #logging.info(f"Initial position is {initial_walker_position}.")
-    #logging.info(f"The total number of steps is {nb_steps}.")
+    logging.info(f"Initial position is {initial_walker_position}.")
+    logging.info(f"The total number of steps is {nb_steps}.")
     # ----------------------------------------------------------------------------------------------------------- #
     #                                      Brownian Motion                                                        #
     # ----------------------------------------------------------------------------------------------------------- #
@@ -168,10 +172,12 @@ if __name__ == "__main__":
     #     for step in steps:
     #         center = int((size - 1) / 2)
     #         initial_walker_position = (center, center)
-    #         brownian = BrownianMotion(grid_size=size)
-    #         brownian.random_walk(initial_position=initial_walker_position, number_of_steps=step, show_animation=False,
-    #                              show_last_frame=True)
+    brownian = BrownianMotion(grid_size=grid_size)
+    brownian.random_walk(initial_position=initial_walker_position, number_of_steps=nb_steps, show_animation=False,
+                         show_last_frame=True)
 
-    nb_steps = 1000
+    brownian.show_final_distances(initial_position=initial_walker_position,
+                                  number_of_steps=nb_steps,
+                                  number_of_walkers=50,
+                                  size=grid_size)
 
-    brownian.show_final_distances(initial_position=initial_walker_position, number_of_steps=nb_steps, number_of_walkers=50)
