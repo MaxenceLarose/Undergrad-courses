@@ -103,7 +103,7 @@ class BrownianMotion(WalkersGrid):
 
             # Animation function.
             animate.brownian_motion_animation(state_frame, position_frame, 60)
-            plt.show()
+            plt.close()
 
         if show_last_frame:
             position_sum += position_grid.state
@@ -116,6 +116,7 @@ class BrownianMotion(WalkersGrid):
             cbar.set_label('Time spent on position [frame]', rotation=270, labelpad = 15)
 
             plt.savefig(f'BM_{self.grid_size}grid_{number_of_steps}step.pdf', dpi = 300, bbox_inches = 'tight')
+            plt.show()
             plt.close()
 
         return current_position
@@ -163,7 +164,7 @@ if __name__ == "__main__":
     # ----------------------------------------------------------------------------------------------------------- #
     #                                       Constants                                                             #
     # ----------------------------------------------------------------------------------------------------------- #
-    grid_size = 501
+    grid_size = 201
     center = int((grid_size - 1)/2)
     initial_walker_position = (center, center)
 
@@ -183,7 +184,7 @@ if __name__ == "__main__":
     #         center = int((size - 1) / 2)
     #         initial_walker_position = (center, center)
     brownian = BrownianMotion(grid_size=grid_size)
-    brownian.random_walk(initial_position=initial_walker_position, number_of_steps=nb_steps, show_animation=False,
+    brownian.random_walk(initial_position=initial_walker_position, number_of_steps=nb_steps, show_animation=True,
                          show_last_frame=True)
 
     brownian.show_final_distances(initial_position=initial_walker_position,

@@ -151,6 +151,7 @@ class DLAOriginal(WalkersGrid):
 
             # Animation function.
             animate.DLA_animation(state_frame, 30, 'original')
+            plt.close()
 
         if show_last_frame:
             frame_sum += frame
@@ -162,9 +163,8 @@ class DLAOriginal(WalkersGrid):
             cbar.set_label('Age of the walker [frame]', rotation=270, labelpad = 15)
 
             plt.savefig(f'DLAoriginal_{self.walkers_count}walkers_{self.grid_size}.pdf', dpi = 300, bbox_inches = 'tight')
-
-
             plt.show()
+            plt.close()
 
 
 
