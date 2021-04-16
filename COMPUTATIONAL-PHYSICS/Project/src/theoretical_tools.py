@@ -104,6 +104,8 @@ def plot_fractal_dimension(
 
 def plot_mean_displacement(distance, nb_steps, number_of_walkers):
     show_properties(nb_steps=nb_steps)
+    fig = plt.figure(figsize=(10, 6))
+    ax = fig.add_subplot(1, 1, 1)
     n, bins, patches = plt.hist(distance, histtype='stepfilled', alpha=0.5, bins=30, density=True)
     loc, sigma = rayleigh.fit(data=distance)
     logging.info(f"loc: {loc} and sigma: {sigma}")
@@ -117,14 +119,15 @@ def plot_mean_displacement(distance, nb_steps, number_of_walkers):
     mean_exp = sigma*np.sqrt(np.pi/2)
     plt.vlines(rms, 0, pdf_fitted.max(), linestyle='--', color='k', linewidth=1)
     plt.vlines(rms_exp, 0, pdf_fitted.max(), linestyles='--', color='grey', linewidth=1)
-    plt.xlabel('Distance moyenne parcourue')
-    plt.ylabel('Probabilité [-]')
-    plt.title(f'Distance moyenne parcourue pour {number_of_walkers} marches aléatoires ')
-    plt.legend([f'Rayleigh $\sigma =$ {sigma}', f'$N$ = {nb_steps}', f'RMS = {rms}',
-                f'RMS (exp) = {rms_exp}'])
+    plt.xlabel('Distance moyenne parcourue', fontsize=14)
+    plt.ylabel('Probabilité [-]', fontsize=14)
+    plt.legend([f'Rayleigh $\sigma$ = {sigma}', f'$N$ = {nb_steps}', f'RMS = {rms}',
+                f'RMS (exp) = {rms_exp}'], fontsize=14)
     logging.info(f'Var (exp) = {var_exp}')
     logging.info(f'Valeur moyenne (exp) = {mean_exp}')
     logging.info(f'Écart-type (exp) = {std_exp}')
+    save_name = "histogram_"
+    plt.savefig(f"{save_name}{nb_steps}step_{number_of_walkers}walkers.pdf", dpi=300)
     plt.show()
 
 
@@ -135,7 +138,7 @@ def show_properties(nb_steps):
     std_theo = np.sqrt(var_theo)
     mean_theo = sigma_theo*np.sqrt(np.pi/2)
     logging.info(f"RMS (theorie) = {rms}")
-    logging.info(f"$\sigma$ (theorie) = {sigma_theo}")
+    logging.info(f"sigma (theorie) = {sigma_theo}")
     logging.info(f"Variance (theorie) = {var_theo}")
     logging.info(f"Écart-type (theorie) = {std_theo}")
     logging.info(f"Valeur moyenne (theorie) = {mean_theo}")
@@ -155,7 +158,7 @@ def plot_2d_displacement(
     line1 = ax.scatter(
         x,
         y,
-        color='r',
+        color='b',
         alpha=0.1,
         edgecolors=None,
         s=15

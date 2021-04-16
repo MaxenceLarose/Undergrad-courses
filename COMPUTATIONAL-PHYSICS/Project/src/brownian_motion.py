@@ -130,6 +130,8 @@ class BrownianMotion(WalkersGrid):
         distance = []
         last_positions = []
         for walker in range(number_of_walkers):
+            if (walker % 10) == 0:
+                print(walker)
             last_position = self.random_walk(
                 initial_position=initial_position,
                 number_of_steps=number_of_steps,
@@ -161,11 +163,11 @@ if __name__ == "__main__":
     # ----------------------------------------------------------------------------------------------------------- #
     #                                       Constants                                                             #
     # ----------------------------------------------------------------------------------------------------------- #
-    grid_size = 101
+    grid_size = 501
     center = int((grid_size - 1)/2)
     initial_walker_position = (center, center)
 
-    nb_steps = 100
+    nb_steps = 1000
 
     logging.info(f"Initial position is {initial_walker_position}.")
     logging.info(f"The total number of steps is {nb_steps}.")
@@ -186,6 +188,6 @@ if __name__ == "__main__":
 
     brownian.show_final_distances(initial_position=initial_walker_position,
                                   number_of_steps=nb_steps,
-                                  number_of_walkers=1000,
+                                  number_of_walkers=10000,
                                   size=grid_size)
 
