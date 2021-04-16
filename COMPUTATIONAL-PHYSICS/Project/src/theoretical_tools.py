@@ -32,7 +32,7 @@ def get_mass_within_radius(
     return mass
 
 
-def get_fractal_dimension(
+def plot_fractal_dimension(
         radius: list,
         mass: list,
 ):
@@ -57,7 +57,7 @@ def get_fractal_dimension(
     )
 
     logging.info(f"Fractal Dimensionality is {param[0]}")
-    radius_array = np.arange(np.asarray(radius).min(), np.asarray(radius).max(), 1)
+    radius_array = np.arange(np.asarray(radius).min() - 1, np.asarray(radius).max() + 1, 1)
 
     fig = plt.figure(figsize=(10, 6))
     ax = fig.add_subplot(1, 1, 1)
@@ -81,9 +81,10 @@ def get_fractal_dimension(
     # ax.set_title("Dimension fractale", fontsize=18)
     ax.set_xlabel("Logarithme du rayon de l'agrégat", fontsize=16)
     ax.set_ylabel("Logarithme du nombre de particules \ndans le rayon donné", fontsize=16)
-    ax.legend([f"Dimension fractale: {param[0]:.3f} \nCorrélation $R^2$: {param[1]:.3f}"])
+    ax.legend([f"Dimension fractale: {param[0]:.3f} \nCorrélation $R^2$: {param_covariance[0]:.3f}"], fontsize=16)
     ax.minorticks_on()
     ax.set_xlim([min(np.log(radius_array)), max(np.log(radius_array))])
+    ax.tick_params(axis='both', labelsize=12)
     plt.tight_layout()
     ax.grid()
     save_name = "Fractal_Dimensionality"
@@ -92,7 +93,7 @@ def get_fractal_dimension(
 
 
 def plot_mean_displacement(distance, nb_steps, number_of_walkers):
-    #plt.hist(distance, histtype='stepfilled', alpha=0.5, bins=20)
+    show_properties(nb_steps=nb_steps)
     n, bins, patches = plt.hist(distance, histtype='stepfilled', alpha=0.5, bins=30, density=True)
     loc, sigma = rayleigh.fit(data=distance)
     print(f"loc: {loc} and sigma: {sigma}")
@@ -101,6 +102,7 @@ def plot_mean_displacement(distance, nb_steps, number_of_walkers):
     plt.plot(x, pdf_fitted, color='r')
     rms = np.sqrt(nb_steps)
     rms_ex = np.sqrt(np.mean(np.asarray(distance)**2))
+    var_exp = (sigma ** 2) * ((4 - np.pi) / 2)
     plt.vlines(rms, 0, pdf_fitted.max(), linestyle='--', color='k', linewidth=1)
     plt.vlines(rms_ex, 0, pdf_fitted.max(), linestyles='--', color='grey', linewidth=1)
     plt.xlabel('Distance moyenne parcourue')
@@ -108,7 +110,15 @@ def plot_mean_displacement(distance, nb_steps, number_of_walkers):
     plt.title('Distance moyenne parcourue pour {} marches aléatoires '.format(number_of_walkers))
     plt.legend(['Rayleigh $\sigma =$ {}'.format(sigma), '$N$ = {}'.format(nb_steps), 'RMS = {}'. format(rms),
                 'RMS (exp) = {}'.format(rms_ex)])
+    print('Var_exp = ', var_exp)
     plt.show()
+
+
+def show_properties(nb_steps):
+    rms = np.sqrt(nb_steps)
+    sigma_theo = rms/np.sqrt(2)
+    var_theo = (sigma_theo**2)*((4-np.pi)/2)
+
 
 
 

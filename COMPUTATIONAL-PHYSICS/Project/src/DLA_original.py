@@ -9,7 +9,7 @@ from random import random
 import matplotlib.pyplot as plt
 
 from animation import Animation
-from theoretical_tools import get_fractal_dimension
+from theoretical_tools import plot_fractal_dimension
 
 
 class DLAOriginal(WalkersGrid):
@@ -305,7 +305,7 @@ def show_fractal_dimension(
         radius.append(size / 4)
         walkers_count.append(dla_cluster.walkers_count)
 
-    get_fractal_dimension(radius=radius, mass=walkers_count)
+    plot_fractal_dimension(radius=radius, mass=walkers_count)
 
 
 if __name__ == "__main__":
