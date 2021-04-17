@@ -1,16 +1,17 @@
 import matplotlib.pyplot as plt
 import matplotlib.animation as anim
 from matplotlib.animation import PillowWriter
-from matplotlib import cm,colors
+from matplotlib import cm, colors
 import numpy as np
 from typing import List
+
 
 class Animation():
     def __init__(self):
         pass
 
     def colormap(self,
-                 reverse : bool = True
+                 reverse: bool = True
                  ):
         """
          This function creates a custom colormap to use for plotting graphs and rendering animations.
@@ -29,7 +30,6 @@ class Animation():
         else:
             my_cmap_tot = np.vstack((my_cmap1, my_cmap2))
 
-
         my_cmap = colors.LinearSegmentedColormap.from_list('my_colormap', my_cmap_tot)
 
         my_cmap.set_under('k')
@@ -38,9 +38,9 @@ class Animation():
 
     def brownian_motion_animation(
             self,
-            state_frames : List[np.ndarray],
-            position_frames : List[np.ndarray],
-            fps : int
+            state_frames: List[np.ndarray],
+            position_frames: List[np.ndarray],
+            fps: int
     ):
         """
         This function animates the state_frames from the brownian_motion.
@@ -55,7 +55,6 @@ class Animation():
         -------
         None
         """
-
         # Number of frames to animate
         nframes = len(state_frames)
 
@@ -94,12 +93,11 @@ class Animation():
 
         plt.show()
 
-
     def DLA_animation(
             self,
-            state_frames : List[np.ndarray],
-            fps : int,
-            DLA_type : str = ''
+            state_frames: List[np.ndarray],
+            fps: int,
+            DLA_type: str = ''
     ):
         """
         This function animates the state_frames from the DLA and the DLA original.
@@ -113,7 +111,6 @@ class Animation():
         -------
         None
         """
-
         # Number of frames to animate
         nframes = len(state_frames)
 
@@ -150,7 +147,3 @@ class Animation():
         animated = anim.FuncAnimation(fig,animate_func, init_func = init, frames = nframes, interval = 1000/fps)
         animated.save(f'DLA{DLA_type}_{nframes}walkers_{np.shape(frame[-1])[0]}.gif', writer=PillowWriter(fps=30))
         plt.show()
-
-
-
-

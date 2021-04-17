@@ -1,10 +1,9 @@
 import matplotlib.pyplot as plt
 import logging
 from typing import Tuple, List
-from scipy.stats import norm, rayleigh
+from scipy.stats import rayleigh
 from scipy.optimize import curve_fit
 import numpy as np
-import matplotlib.mlab as mlab
 
 
 def get_mass_within_radius(
@@ -102,41 +101,77 @@ def plot_fractal_dimension(
     plt.show()
 
 
-def plot_mean_displacement(distance, nb_steps, number_of_walkers):
+def plot_distance_distribution(
+        distance: List[float],
+        nb_steps: int,
+        number_of_walkers: int
+):
+    """
+    This functions is used to plot the distribution of the distance traveled by the walkers. It also displays the
+    theoretical value of the parameters of the Rayleigh distribution corresponding to the distance distribution.
+
+    Parameters
+    ----------
+    distance (list): List of the traveled distances of the walkers.
+    nb_steps (int): The number of steps on the grid the walker must do.
+    number_of_walkers (int): The total number of random walks performed.
+
+    Returns
+    -------
+    Fig and axes.
+    """
     show_properties(nb_steps=nb_steps)
-    fig = plt.figure(figsize=(10, 6))
-    ax = fig.add_subplot(1, 1, 1)
-    n, bins, patches = plt.hist(distance, histtype='stepfilled', alpha=0.5, bins=30, density=True)
+
+    distance = np.asarray(distance)
     loc, sigma = rayleigh.fit(data=distance)
     logging.info(f"loc: {loc} and sigma: {sigma}")
     x = np.linspace(0, distance.max()+5, 100)
     pdf_fitted = rayleigh.pdf(x, loc, sigma)
-    plt.plot(x, pdf_fitted, color='r')
+
     rms = np.sqrt(nb_steps)
     rms_exp = np.sqrt(np.mean(np.asarray(distance)**2))
     var_exp = (sigma ** 2) * ((4 - np.pi) / 2)
     std_exp = np.sqrt(var_exp)
     mean_exp = sigma*np.sqrt(np.pi/2)
+
+    logging.info(f'Var (exp) = {var_exp}')
+    logging.info(f'Valeur moyenne (exp) = {mean_exp}')
+    logging.info(f'Écart-type (exp) = {std_exp}')
+
+    fig = plt.figure(figsize=(10, 6))
+    plt.hist(distance, histtype='stepfilled', alpha=0.5, bins=30, density=True)
+    plt.plot(x, pdf_fitted, color='r')
     plt.vlines(rms, 0, pdf_fitted.max(), linestyle='--', color='k', linewidth=1)
     plt.vlines(rms_exp, 0, pdf_fitted.max(), linestyles='--', color='grey', linewidth=1)
     plt.xlabel('Distance moyenne parcourue', fontsize=14)
     plt.ylabel('Probabilité [-]', fontsize=14)
     plt.legend([f'Rayleigh $\sigma$ = {sigma}', f'$N$ = {nb_steps}', f'RMS = {rms}',
                 f'RMS (exp) = {rms_exp}'], fontsize=14)
-    logging.info(f'Var (exp) = {var_exp}')
-    logging.info(f'Valeur moyenne (exp) = {mean_exp}')
-    logging.info(f'Écart-type (exp) = {std_exp}')
     save_name = "histogram_"
     plt.savefig(f"{save_name}{nb_steps}step_{number_of_walkers}walkers.pdf", dpi=300)
     plt.show()
 
 
-def show_properties(nb_steps):
+def show_properties(
+        nb_steps: int
+):
+    """
+    This functions is used to show the theoretical properties of the Rayleigh distribution.
+
+    Parameters
+    ----------
+    nb_steps (int): The number of steps on the grid the walker must do.
+
+    Returns
+    -------
+    None
+    """
     rms = np.sqrt(nb_steps)
     sigma_theo = rms/np.sqrt(2)
     var_theo = (sigma_theo**2)*((4-np.pi)/2)
     std_theo = np.sqrt(var_theo)
     mean_theo = sigma_theo*np.sqrt(np.pi/2)
+
     logging.info(f"RMS (theorie) = {rms}")
     logging.info(f"sigma (theorie) = {sigma_theo}")
     logging.info(f"Variance (theorie) = {var_theo}")
@@ -150,6 +185,21 @@ def plot_2d_displacement(
         grid_size: int,
         number_of_walkers: int
 ):
+    """
+    This functions is used to plot the distribution of the distance traveled by the walkers. It also displays the
+    theoretical value of the parameters of the Rayleigh distribution corresponding to the distance distribution.
+
+    Parameters
+    ----------
+    last_distance (List[Tuple]): List of the last positions of the walkers. The last position is a tuple (x, y).
+    nb_steps (int): The number of steps on the grid the walker must do.
+    grid_size (int): Square grid size.
+    number_of_walkers (int): The total number of random walks performed.
+
+    Returns
+    -------
+    Fig and axes.
+    """
     x, y = list(map(list, zip(*last_positions)))
 
     fig = plt.figure(figsize=(8, 8))

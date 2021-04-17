@@ -272,14 +272,3 @@ if __name__ == "__main__":
     # ----------------------------------------------------------------------------------------------------------- #
     grid = WalkersGrid()
     grid_state = grid.state
-    grid.set_state(position=initial_walker_position, state=1, add_new_walker=True)
-    print(grid.walkers_count)
-    print(grid.get_adjacent_positions((0, 0)))
-    grid.set_state(position=(99, 99), state=1, add_new_walker=False)
-    print(grid.get_random_adjacent_position(adjacent_positions=grid.get_adjacent_positions((100, 100)),
-                                            avoid_other_walkers=True))
-    print(grid.get_state_surface_area())
-    print(grid.get_ratio_of_occupied_area())
-    grid.set_state(position=(99, 98), state=1, add_new_walker=True)
-    print(grid.get_neighbors_count())
-    print(grid.get_average_neighbors_count())

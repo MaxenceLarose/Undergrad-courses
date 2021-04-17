@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from walkers_grid import WalkersGrid
-from src.tools import logs_file_setup, set_seed
+from src.tools import logs_file_setup
 from animation import Animation
 
 
@@ -138,9 +138,6 @@ class DLA(WalkersGrid):
             plt.savefig(f'DLAnew_{self.walkers_count}walkers_{self.grid_size}.pdf', dpi = 300, bbox_inches = 'tight')
             plt.show()
             plt.close()
-
-
-
 
     def check_walk_terminate_conditions(
             self,

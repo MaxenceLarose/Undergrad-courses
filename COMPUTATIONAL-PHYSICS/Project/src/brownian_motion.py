@@ -1,12 +1,12 @@
 import logging
-from typing import Tuple, List
+from typing import Tuple
 import matplotlib.pyplot as plt
 import numpy as np
 
-from src.tools import logs_file_setup, set_seed
+from src.tools import logs_file_setup
 from walkers_grid import WalkersGrid
 from animation import Animation
-from theoretical_tools import plot_mean_displacement, plot_2d_displacement
+from theoretical_tools import plot_distance_distribution, plot_2d_displacement
 
 
 class BrownianMotion(WalkersGrid):
@@ -49,7 +49,7 @@ class BrownianMotion(WalkersGrid):
 
         # create lists to save different frames of the grid.
         state_frame = []
-        position_frame =[]
+        position_frame = []
         position_sum = 0
 
         # random walk loop for the number of steps chosen.
@@ -87,7 +87,6 @@ class BrownianMotion(WalkersGrid):
                 add_new_walker=False
             )
 
-
             current_position = next_position
 
         # Set a secondary grid to keep track of last position.
@@ -121,13 +120,28 @@ class BrownianMotion(WalkersGrid):
 
         return current_position
 
-    def show_final_distances(
+    def show_traveled_distances(
             self,
             initial_position: Tuple[int, int],
             number_of_steps: int,
             number_of_walkers: int,
             size: int
     ):
+        """
+        This functions is used to perform multiple random walks to plot the distribution of the distance traveled by the
+        walkers.
+
+        Parameters
+        ----------
+        initial_position (Tuple[int, int]): The starting position (x, y).
+        number_of_steps (int): The number of steps on the grid the walker must do.
+        number_of_walkers (int): The total number of random walks performed.
+        size (int): Square grid size.
+
+        Returns
+        -------
+        Fig and axes.
+        """
         distance = []
         last_positions = []
         for walker in range(number_of_walkers):
@@ -141,8 +155,8 @@ class BrownianMotion(WalkersGrid):
             distance.append(np.linalg.norm(np.asarray(last_position) - np.asarray(initial_position)))
             last_positions.append(last_position)
 
-        plot_mean_displacement(
-            distance=np.asarray(distance),
+        plot_distance_distribution(
+            distance=distance,
             nb_steps=nb_steps,
             number_of_walkers=number_of_walkers
         )
@@ -167,7 +181,8 @@ if __name__ == "__main__":
     grid_size = 201
     center = int((grid_size - 1)/2)
     initial_walker_position = (center, center)
-
+    show_traveled_distances_distribution = False
+    loop = False
     nb_steps = 1000
 
     logging.info(f"Initial position is {initial_walker_position}.")
@@ -175,20 +190,27 @@ if __name__ == "__main__":
     # ----------------------------------------------------------------------------------------------------------- #
     #                                      Brownian Motion                                                        #
     # ----------------------------------------------------------------------------------------------------------- #
-
-
-    # steps = np.arange(100,1100,100)
-    # grid_size = np.arange(101,505,101)
-    # for size in grid_size:
-    #     for step in steps:
-    #         center = int((size - 1) / 2)
-    #         initial_walker_position = (center, center)
     brownian = BrownianMotion(grid_size=grid_size)
-    brownian.random_walk(initial_position=initial_walker_position, number_of_steps=nb_steps, show_animation=True,
-                         show_last_frame=True)
 
-    brownian.show_final_distances(initial_position=initial_walker_position,
-                                  number_of_steps=nb_steps,
-                                  number_of_walkers=10000,
-                                  size=grid_size)
+    brownian.random_walk(
+        initial_position=initial_walker_position,
+        number_of_steps=nb_steps,
+        show_animation=True,
+        show_last_frame=True
+    )
 
+    if show_traveled_distances_distribution:
+        brownian.show_traveled_distances(
+            initial_position=initial_walker_position,
+            number_of_steps=nb_steps,
+            number_of_walkers=10000,
+            size=grid_size
+        )
+
+    if loop:
+        steps = np.arange(100, 1100, 100)
+        grid_size = np.arange(101, 505, 101)
+        for size in grid_size:
+            for step in steps:
+                center = int((size - 1) / 2)
+                initial_walker_position = (center, center)
