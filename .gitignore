@@ -127,3 +127,6 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+*.png
+*.fits
+COMPUTATIONAL-PHYSICS/TP5/tplib.py
